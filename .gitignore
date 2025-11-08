@@ -1,4 +1,5 @@
 # --- Compilación ---
+/Biblioteca/build/
 /build*/
 /bin/
 /lib/
