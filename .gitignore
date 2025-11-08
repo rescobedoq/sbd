@@ -1,0 +1,72 @@
+# --- Compilación ---
+/build*/
+/bin/
+/lib/
+/debug/
+/release/
+/x64/
+/x86/
+/out/
+/dist/
+
+# --- Archivos generados por qmake / CMake ---
+Makefile
+Makefile.*
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.qmake.stash
+*.qmlproject.user
+*.moc
+*.obj
+*.o
+*.a
+*.so
+*.dll
+*.dylib
+*.exe
+*.app/
+*.manifest
+
+# --- Archivos de Qt Creator ---
+*.autosave
+*.creator
+*.creator.user
+*.creator.user.*
+*.config
+*.files
+*.includes
+*.cflags
+*.cxxflags
+
+# --- Archivos temporales ---
+*.tmp
+*.log
+*.cache
+*.bak
+*.swp
+*.swo
+*.DS_Store
+*.user
+*.rej
+
+# --- Archivos de pruebas ---
+*.gcda
+*.gcno
+*.gcov
+*.profraw
+*.profdata
+
+# --- Directorios ocultos ---
+.idea/
+.vscode/
+.cache/
+.clangd/
+.ccls-cache/
+.ipynb_checkpoints/
+
+# --- Sistema operativo ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
