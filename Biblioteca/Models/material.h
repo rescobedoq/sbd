@@ -2,7 +2,7 @@
 #define MATERIAL_H
 #include <QString>
 
-class material {
+class Material {
 protected:
     QString titulo;
     QString autor;
@@ -10,7 +10,7 @@ protected:
     bool disponible;
 
 public:
-    material(QString titulo, QString autor, int anio);
+    Material(QString titulo, QString autor, int anio, bool disponible);
     virtual QString obtenerTipo() const = 0;
     QString getTitulo() const;
     QString getAutor() const;

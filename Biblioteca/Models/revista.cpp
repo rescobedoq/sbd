@@ -1,8 +1,8 @@
 #include "revista.h"
 
-revista::revista(QString titulo, QString autor, int anio, int volumen)
-    : material(titulo, autor, anio), volumen(volumen) {}
+Revista::Revista(QString titulo, QString autor, int anio, bool disponible, int volumen)
+    : Material(titulo, autor, anio, disponible), volumen(volumen) {}
 
-QString revista::obtenerTipo() const {
+QString Revista::obtenerTipo() const {
     return "Revista";
 }

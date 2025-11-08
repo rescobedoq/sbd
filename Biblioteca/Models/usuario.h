@@ -4,13 +4,13 @@
 
 #include <QString>
 
-class usuario {
+class Usuario {
 private:
     QString nombre;
     int id;
 
 public:
-    usuario(QString nombre, int id);
+    Usuario(QString nombre, int id);
     QString getNombre() const;
     int getId() const;
 };

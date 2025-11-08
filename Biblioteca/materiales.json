@@ -1,0 +1,23 @@
+[
+  {
+    "tipo": "Libro",
+    "titulo": "Programación en C++",
+    "autor": "Bjarne Stroustrup",
+    "anio": 2013,
+    "disponible": true
+  },
+  {
+    "tipo": "Revista",
+    "titulo": "Nature",
+    "autor": "Editorial Nature",
+    "anio": 2021,
+    "disponible": false
+  },
+  {
+    "tipo": "Tesis",
+    "titulo": "Optimización de rutas de transporte",
+    "autor": "Gustavo Turpo",
+    "anio": 2025,
+    "disponible": true
+  }
+]

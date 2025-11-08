@@ -1,12 +1,12 @@
 #include "usuario.h"
 
-usuario::usuario(QString nombre, int id)
+Usuario::Usuario(QString nombre, int id)
     : nombre(nombre), id(id) {}
 
-QString usuario::getNombre() const {
+QString Usuario::getNombre() const {
     return nombre;
 }
 
-int usuario::getId() const {
+int Usuario::getId() const {
     return id;
 }

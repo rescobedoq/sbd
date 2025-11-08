@@ -1,17 +1,21 @@
 // Material.cpp
 #include "material.h"
 
-material::material(QString titulo, QString autor, int anio)
-    : titulo(titulo), autor(autor), anio(anio) {}
+Material::Material(QString titulo, QString autor, int anio, bool disponible)
+    : titulo(titulo), autor(autor), anio(anio), disponible(disponible) {}
 
-QString material::getTitulo() const {
+QString Material::getTitulo() const {
     return titulo;
 }
 
-QString material::getAutor() const {
+QString Material::getAutor() const {
     return autor;
 }
 
-int material::getAnio() const {
+int Material::getAnio() const {
     return anio;
+}
+
+bool Material::getDisponible() const {
+    return disponible;
 }

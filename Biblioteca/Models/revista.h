@@ -3,12 +3,12 @@
 
 #include "material.h"
 
-class revista : public material {
+class Revista : public Material {
 private:
     int volumen;
 
 public:
-    revista(QString titulo, QString autor, int anio, int volumen);
+    Revista(QString titulo, QString autor, int anio, bool disponible, int volumen);
     QString obtenerTipo() const override;
 };
 

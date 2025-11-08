@@ -3,12 +3,12 @@
 
 #include "material.h"
 
-class tesis : public material {
+class Tesis : public Material {
 private:
     QString universidad;
 
 public:
-    tesis(QString titulo, QString autor, int anio, QString universidad);
+    Tesis(QString titulo, QString autor, int anio, bool disponible, QString universidad);
     QString obtenerTipo() const override;
 };
 

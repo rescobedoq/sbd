@@ -1,9 +1,9 @@
 #include "tesis.h"
 
-tesis::tesis(QString titulo, QString autor, int anio, QString universidad)
-    : material(titulo, autor, anio), universidad(universidad) {}
+Tesis::Tesis(QString titulo, QString autor, int anio, bool disponible, QString universidad)
+    : Material(titulo, autor, anio, disponible), universidad(universidad) {}
 
-QString tesis::obtenerTipo() const {
+QString Tesis::obtenerTipo() const {
     return "Tesis";
 }
 

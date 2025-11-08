@@ -1,9 +1,8 @@
 #include "libro.h"
 
-libro::libro(QString titulo, QString autor, int anio, QString genero)
-    : material(titulo, autor, anio), genero(genero) {}
+Libro::Libro(QString titulo, QString autor, int anio, bool disponible, QString genero)
+    : Material(titulo, autor, anio, disponible), genero(genero) {}
 
-QString libro::obtenerTipo() const {
+QString Libro::obtenerTipo() const {
     return "Libro";
 }
-
