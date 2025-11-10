@@ -32,6 +32,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Models/usuario.h Models/usuario.cpp
         Views/Materiales.h Views/Materiales.cpp Views/Materiales.ui
         Views/Usuarios.h Views/Usuarios.cpp Views/Usuarios.ui
+        Controllers/controllerMaterial.h Controllers/controllerMaterial.cpp
 
     )
 # Define target properties for Android with Qt 6 as:

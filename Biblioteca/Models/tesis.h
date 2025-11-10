@@ -10,6 +10,7 @@ private:
 public:
     Tesis(QString titulo, QString autor, int anio, bool disponible, QString universidad);
     QString obtenerTipo() const override;
+    QString getUniversidad()const{return universidad;}
 };
 
 #endif // TESIS_H

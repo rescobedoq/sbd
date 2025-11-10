@@ -19,3 +19,7 @@ int Material::getAnio() const {
 bool Material::getDisponible() const {
     return disponible;
 }
+
+void Material::setDisponible(bool valor) {
+    disponible = valor;
+}

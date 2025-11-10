@@ -10,6 +10,7 @@ private:
 public:
     Libro(QString titulo, QString autor, int anio, bool disponible, QString genero);
     QString obtenerTipo() const override;
+    QString getGenero() const {return genero;}
 };
 
 #endif // LIBRO_H
