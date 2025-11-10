@@ -5,71 +5,30 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QVector>
-#include "../Models/libro.h"
-#include "../Models/revista.h"
-#include "../Models/tesis.h"
 #include "../Models/material.h"
-
-QVector<Material*> cargarMaterialesDesdeJSON(const QString& rutaArchivo) {
-    QVector<Material*> materiales;
-
-    QFile archivo(rutaArchivo);
-    if (!archivo.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning("No se pudo abrir el archivo JSON.");
-        return materiales;
-    }
-
-    QByteArray data = archivo.readAll();
-    archivo.close();
-
-    QJsonDocument doc = QJsonDocument::fromJson(data);
-    QJsonArray array = doc.array();
-
-    for (const QJsonValue& value : array) {
-        QJsonObject obj = value.toObject();
-
-        QString tipo = obj["tipo"].toString();
-        QString titulo = obj["titulo"].toString();
-        QString autor = obj["autor"].toString();
-        int anio = obj["anio"].toInt();
-        bool disponible = obj["disponible"].toBool();
-
-        if (tipo == "Libro") {
-            QString genero = obj["genero"].toString();
-            materiales.append(new Libro(titulo, autor, anio, disponible, genero));
-        } else if (tipo == "Revista") {
-            int volumen = obj["volumen"].toInt();
-            materiales.append(new Revista(titulo, autor, anio, disponible, volumen));
-        } else if (tipo == "Tesis") {
-            QString universidad = obj["universidad"].toString();
-            materiales.append(new Tesis(titulo, autor, anio, disponible, universidad));
-        }
-    }
-
-    return materiales;
-}
-
-
+#include "../Controllers/controllerMaterial.h"
 
 Materiales::Materiales(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Materiales)
 {
     ui->setupUi(this);
+    controllerMaterial controller;
     QString ruta = QCoreApplication::applicationDirPath() + "/../../materiales.json";
-    qDebug() << "Intentando abrir JSON en:" << ruta;
-    QVector<Material*> lista = cargarMaterialesDesdeJSON(ruta);
+    controller.cargarMateriales(ruta);
+
+    QVector<std::shared_ptr<Material>>& materialesRef = controller.obtenerMateriales();
 
     // Configura la tabla
     ui->tablaMateriales->setColumnCount(5);
     ui->tablaMateriales->setHorizontalHeaderLabels(
         {"Tipo", "Título", "Autor", "Año", "Disponible"}
         );
-    ui->tablaMateriales->setRowCount(lista.size());
+    ui->tablaMateriales->setRowCount(materialesRef.size());
 
     // Llenar tabla
-    for (int i = 0; i < lista.size(); ++i) {
-        Material* m = lista[i];
+    for (int i = 0; i < materialesRef.size(); ++i) {
+        std::shared_ptr<Material> m = materialesRef[i];
         ui->tablaMateriales->setItem(i, 0, new QTableWidgetItem(m->obtenerTipo()));
         ui->tablaMateriales->setItem(i, 1, new QTableWidgetItem(m->getTitulo()));
         ui->tablaMateriales->setItem(i, 2, new QTableWidgetItem(m->getAutor()));

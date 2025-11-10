@@ -11,12 +11,19 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    // Mostrando ventana de materiales
+    Usuarios u;
+    u.show();
+    Materiales m;
+    m.show();
+    return a.exec();
 
     // Crear controlador
     controllerMaterial controller;
+    QString ruta = QCoreApplication::applicationDirPath() + "/../../materiales.json";
 
     // Cargar materiales desde JSON
-    if (controller.cargarMateriales("materiales.json")) {
+    if (controller.cargarMateriales(ruta)) {
         qDebug() << "Materiales cargados exitosamente";
 
         // Mostrar materiales cargados
@@ -39,12 +46,6 @@ int main(int argc, char *argv[])
     if (controller.guardarMateriales("materiales_salida.json")) {
         qDebug() << "Materiales guardados exitosamente";
     }
-
-    // Mostrar ventana de usuarios
-    Usuarios w;
-    w.show();
-
-    return a.exec();
 }
 
 
