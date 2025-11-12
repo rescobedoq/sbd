@@ -8,7 +8,7 @@ private:
     int volumen;
 
 public:
-    Revista(QString titulo, QString autor, int anio, bool disponible, int volumen);
+    Revista(int id, QString titulo, QString autor, int anio, bool disponible, int volumen);
     QString obtenerTipo() const override;
     int getVolumen()const{return volumen;}
 };

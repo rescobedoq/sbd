@@ -1,7 +1,7 @@
 #include "usuario.h"
 
-Usuario::Usuario(QString nombre, int id)
-    : nombre(nombre), id(id) {}
+Usuario::Usuario(int id, QString nombre)
+    : id(id), nombre(nombre) {}
 
 QString Usuario::getNombre() const {
     return nombre;

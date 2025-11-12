@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -32,8 +32,15 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Models/usuario.h Models/usuario.cpp
         Views/Materiales.h Views/Materiales.cpp Views/Materiales.ui
         Views/Usuarios.h Views/Usuarios.cpp Views/Usuarios.ui
-        Controllers/controllerMaterial.h Controllers/controllerMaterial.cpp
+        Controllers/MaterialController.h Controllers/MaterialController.cpp
         Controllers/UsuarioController.h Controllers/UsuarioController.cpp
+        Models/BaseDatos.h Models/BaseDatos.cpp
+        Models/UsuarioDAO.h Models/UsuarioDAO.cpp
+        Models/MaterialDAO.h Models/MaterialDAO.cpp
+        Models/LibroDAO.h Models/LibroDAO.cpp
+
+        Models/TesisDAO.h Models/TesisDAO.cpp
+        Models/RevistaDAO.h Models/RevistaDAO.cpp
 
     )
 # Define target properties for Android with Qt 6 as:
@@ -54,7 +61,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(Biblioteca PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(Biblioteca PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Sql)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

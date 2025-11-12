@@ -8,7 +8,7 @@ private:
     QString genero;
 
 public:
-    Libro(QString titulo, QString autor, int anio, bool disponible, QString genero);
+    Libro(int id, QString titulo, QString autor, int anio, bool disponible, QString genero);
     QString obtenerTipo() const override;
     QString getGenero() const {return genero;}
 };

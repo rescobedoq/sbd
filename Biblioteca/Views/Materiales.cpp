@@ -6,18 +6,19 @@
 #include <QJsonObject>
 #include <QVector>
 #include "../Models/material.h"
-#include "../Controllers/controllerMaterial.h"
 
-Materiales::Materiales(QWidget *parent) :
-    QWidget(parent),
+/*Modificar interfaz y agregar pantallas para incluir:
+ * crear material
+ * detalles del material seleccionado
+ * modificar material seleccionado
+ * eliminar material seleccionado
+*/
+Materiales::Materiales(MaterialController* controller, QWidget *parent) :
+    QWidget(parent), controllerMaterial(controller),
     ui(new Ui::Materiales)
 {
     ui->setupUi(this);
-    controllerMaterial controller;
-    QString ruta = QCoreApplication::applicationDirPath() + "/../../materiales.json";
-    controller.cargarMateriales(ruta);
-
-    QVector<std::shared_ptr<Material>>& materialesRef = controller.obtenerMateriales();
+    QVector<std::shared_ptr<Material>>& materialesRef = controller->obtenerMateriales();
 
     // Configura la tabla
     ui->tablaMateriales->setColumnCount(5);

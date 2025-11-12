@@ -10,7 +10,7 @@ private:
     int id;
 
 public:
-    Usuario(QString nombre, int id);
+    Usuario(int id, QString nombre);
     QString getNombre() const;
     int getId() const;
 };

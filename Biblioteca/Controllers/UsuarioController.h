@@ -10,24 +10,23 @@
 #include <QJsonObject>
 #include <QDebug>
 #include "../Models/usuario.h"
+#include "../Models/UsuarioDAO.h"
 
 class UsuarioController
 {
 public:
     UsuarioController();
 
-    bool cargarUsuarios(const QString& archivo);
+    bool cargarUsuarios();
     bool guardarUsuarios(const QString& archivo);
 
-    void agregarUsuario(std::shared_ptr<Usuario> usuario);
+    void agregarUsuario(const int& id,const QString& nombre);
     void eliminarUsuario(int indice);
     QVector<std::shared_ptr<Usuario>>& obtenerUsuarios();
 
 private:
+    UsuarioDAO dao;
     QVector<std::shared_ptr<Usuario>> usuarios;
-
-    std::shared_ptr<Usuario> crearUsuarioDesdeJson(const QString& nombre,
-                                                     const int& id);
 };
 
 #endif // USUARIOCONTROLLER_H

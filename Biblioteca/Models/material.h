@@ -4,14 +4,16 @@
 
 class Material {
 protected:
+    int id;
     QString titulo;
     QString autor;
     int anio;
     bool disponible;
 
 public:
-    Material(QString titulo, QString autor, int anio, bool disponible);
+    Material(int id, QString titulo, QString autor, int anio, bool disponible);
     virtual QString obtenerTipo() const = 0;
+    int getID() const;
     QString getTitulo() const;
     QString getAutor() const;
     int getAnio() const;

@@ -6,18 +6,19 @@
 #include <QJsonObject>
 #include <QVector>
 #include "../Models/usuario.h"
-#include "../Controllers/UsuarioController.h"
 
-Usuarios::Usuarios(QWidget *parent)
-    : QWidget(parent)
+/*Modificar interfaz y agregar pantallas para incluir:
+ * crear usuario
+ * detalles del usuario seleccionado
+ * modificar usuario seleccionado
+ * eliminar usuario seleccionado
+*/
+Usuarios::Usuarios(UsuarioController* controller, QWidget *parent)
+    : QWidget(parent), controllerUsuario(controller)
     , ui(new Ui::Usuarios)
 {
     ui->setupUi(this);
-    UsuarioController controller;
-    QString ruta = QCoreApplication::applicationDirPath() + "/../../usuarios.json";
-    controller.cargarUsuarios(ruta);
-
-    QVector<std::shared_ptr<Usuario>>& usuariosRef = controller.obtenerUsuarios();
+    QVector<std::shared_ptr<Usuario>>& usuariosRef = controller->obtenerUsuarios();
 
     // Configura la tabla
     ui->tablaUsuarios->setColumnCount(2);
