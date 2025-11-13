@@ -6,6 +6,7 @@
 #include <QJsonObject>
 #include <QVector>
 #include "../Models/usuario.h"
+#include "UsuarioForm.h"
 
 /*Modificar interfaz y agregar pantallas para incluir:
  * crear usuario
@@ -18,29 +19,70 @@ Usuarios::Usuarios(UsuarioController* controller, QWidget *parent)
     , ui(new Ui::Usuarios)
 {
     ui->setupUi(this);
-    QVector<std::shared_ptr<Usuario>>& usuariosRef = controller->obtenerUsuarios();
+    cargarTabla();
+}
+
+void Usuarios::cargarTabla() {
+    QVector<std::shared_ptr<Usuario>>& usuariosRef = controllerUsuario->obtenerUsuarios();
 
     // Configura la tabla
-    ui->tablaUsuarios->setColumnCount(2);
-    ui->tablaUsuarios->setHorizontalHeaderLabels(
+    ui->tblUsuarios->setColumnCount(2);
+    ui->tblUsuarios->setHorizontalHeaderLabels(
         {"ID", "Nombre"}
         );
-    ui->tablaUsuarios->setRowCount(usuariosRef.size());
+    ui->tblUsuarios->setRowCount(usuariosRef.size());
 
     // Llenar tabla
     for (int i = 0; i < usuariosRef.size(); ++i) {
         std::shared_ptr<Usuario> u = usuariosRef[i];
-        ui->tablaUsuarios->setItem(i, 0, new QTableWidgetItem(QString::number(u->getId())));
-        ui->tablaUsuarios->setItem(i, 1, new QTableWidgetItem(u->getNombre()));
+        ui->tblUsuarios->setItem(i, 0, new QTableWidgetItem(QString::number(u->getId())));
+        ui->tblUsuarios->setItem(i, 1, new QTableWidgetItem(u->getNombre()));
     }
-    ui->tablaUsuarios->resizeColumnsToContents();
-    ui->tablaUsuarios->resizeRowsToContents();
-    ui->tablaUsuarios->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-    ui->tablaUsuarios->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui->tablaUsuarios->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->tblUsuarios->resizeColumnsToContents();
+    ui->tblUsuarios->resizeRowsToContents();
+    ui->tblUsuarios->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    ui->tblUsuarios->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->tblUsuarios->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     layout()->activate();   // recalcula el layout
     adjustSize();
     resize(width() + 20, height());
+
+    QHeaderView *header = ui->tblUsuarios->horizontalHeader();
+
+    header->setSectionResizeMode(QHeaderView::Fixed);   // Todas fijas por defecto
+    header->setSectionResizeMode(1, QHeaderView::Stretch);
+}
+
+void Usuarios::on_btnNuevoUsuario_clicked() {
+    // Crear una nueva ventana de detalles
+    UsuarioForm *form = new UsuarioForm(controllerUsuario, 1);
+    connect(form, &UsuarioForm::usuarioActualizado, this, &Usuarios::cargarTabla);
+
+    // Mostrar la ventana
+    form->show();
+}
+
+void Usuarios::on_btnEditarUsuario_clicked() {
+    // Crear una nueva ventana de detalles
+    int fila = ui->tblUsuarios->currentRow();
+    if (fila < 0) return; // nada seleccionado
+
+    std::shared_ptr<Usuario> usuarioSeleccionado = controllerUsuario->obtenerUsuarios()[fila];
+    UsuarioForm *form = new UsuarioForm(controllerUsuario, 2, usuarioSeleccionado);
+    connect(form, &UsuarioForm::usuarioActualizado, this, &Usuarios::cargarTabla);
+    // Mostrar la ventana
+    form->show();
+}
+
+void Usuarios::on_btnEliminarUsuario_clicked() {
+    // Crear una nueva ventana de detalles
+    int fila = ui->tblUsuarios->currentRow();
+    if (fila < 0) return; // nada seleccionado
+
+    std::shared_ptr<Usuario> usuarioSeleccionado = controllerUsuario->obtenerUsuarios()[fila];
+    qDebug() << "Llamar a eliminarUsuario(int id) con id: " + QString::number(usuarioSeleccionado->getId());
+    // Mostrar la ventana
+    cargarTabla();
 }
 
 Usuarios::~Usuarios()

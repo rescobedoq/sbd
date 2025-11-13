@@ -42,6 +42,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Models/TesisDAO.h Models/TesisDAO.cpp
         Models/RevistaDAO.h Models/RevistaDAO.cpp
 
+
+        Views/UsuarioForm.h Views/UsuarioForm.cpp Views/UsuarioForm.ui
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Biblioteca APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

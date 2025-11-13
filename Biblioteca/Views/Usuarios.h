@@ -14,7 +14,13 @@ class Usuarios : public QWidget
 
 public:
     explicit Usuarios(UsuarioController* controller, QWidget* parent = nullptr);
+    void cargarTabla();
     ~Usuarios();
+
+private slots:
+    void on_btnNuevoUsuario_clicked();
+    void on_btnEditarUsuario_clicked();
+    void on_btnEliminarUsuario_clicked();
 
 private:
     UsuarioController* controllerUsuario;

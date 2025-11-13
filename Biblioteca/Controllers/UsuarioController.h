@@ -20,7 +20,7 @@ public:
     bool cargarUsuarios();
     bool guardarUsuarios(const QString& archivo);
 
-    void agregarUsuario(const int& id,const QString& nombre);
+    bool agregarUsuario(const int& id,const QString& nombre);
     void eliminarUsuario(int indice);
     QVector<std::shared_ptr<Usuario>>& obtenerUsuarios();
 

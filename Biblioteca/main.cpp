@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     controllerUsuario.agregarUsuario(2, "Daniel Torres");
     controllerUsuario.agregarUsuario(3, "María López");
     controllerUsuario.agregarUsuario(4, "Carlos Pérez");
-
+    /*
     std::shared_ptr<Libro> libro;
     libro = std::make_shared<Libro>(2, "Libro 2", "Jose Lopez", 2025, 1, "Novela");
     libroDAO.insertarLibro(libro);
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     std::shared_ptr<Tesis> tesis;
     tesis = std::make_shared<Tesis>(4, "Tesis 1", "Juan Perez", 2025, 1, "UNSA");
     tesisDAO.insertarTesis(tesis);
-
+    */
     controllerUsuario.cargarUsuarios();
     controllerMateriales.cargarMateriales();
 
