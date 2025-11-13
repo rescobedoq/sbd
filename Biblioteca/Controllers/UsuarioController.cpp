@@ -9,11 +9,20 @@ bool UsuarioController::cargarUsuarios() {
 }
 
 // Agregar usuario implementada
-void UsuarioController::agregarUsuario(const int& id,const QString& nombre) {
+bool UsuarioController::agregarUsuario(const int& id,const QString& nombre) {
     std::shared_ptr<Usuario> usuario;
     usuario = std::make_shared<Usuario>(id, nombre);
-    dao.insertarUsuario(usuario);
-    usuarios.append(usuario);
+    for (const auto& u : usuarios) {
+        if (u->getId() == id) {
+            qDebug() << "Validación Controller: Usuario duplicado";
+            return false;
+        }
+    }
+    if(dao.insertarUsuario(usuario)){
+        usuarios.append(usuario);
+        return true;
+    }
+    return false;
 }
 
 /* Falta implementar leerUsuario(), actualizarUsuario(), eliminarUsuario(),
