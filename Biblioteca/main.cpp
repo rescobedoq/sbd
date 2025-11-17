@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QString rutaDB = QCoreApplication::applicationDirPath() + "/../../Biblioteca.db";
     if (!BaseDatos::conectar(rutaDB)) {
-        qDebug() << "❌ Error: no se pudo conectar a la base de datos.";
+        qDebug() << "Error: no se pudo conectar a la base de datos.";
         return -1;
     }
 
@@ -25,11 +25,10 @@ int main(int argc, char *argv[])
     LibroDAO libroDAO;
     RevistaDAO revistaDAO;
     TesisDAO tesisDAO;
-    controllerUsuario.agregarUsuario(1, "Gustavo Turpo");
+    /*controllerUsuario.agregarUsuario(1, "Gustavo Turpo");
     controllerUsuario.agregarUsuario(2, "Daniel Torres");
     controllerUsuario.agregarUsuario(3, "María López");
     controllerUsuario.agregarUsuario(4, "Carlos Pérez");
-    /*
     std::shared_ptr<Libro> libro;
     libro = std::make_shared<Libro>(2, "Libro 2", "Jose Lopez", 2025, 1, "Novela");
     libroDAO.insertarLibro(libro);
