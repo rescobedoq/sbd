@@ -16,6 +16,9 @@ public:
     explicit Materiales(MaterialController* controller, QWidget *parent = nullptr);
     ~Materiales();
 
+private slots:
+    void on_agregarMateButton_3_clicked();
+
 private:
     MaterialController* controllerMaterial;
     Ui::Materiales *ui;
