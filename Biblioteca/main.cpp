@@ -50,9 +50,8 @@ int main(int argc, char *argv[])
     Materiales m(&controllerMateriales);
     m.show();
     return a.exec();
-
-
 }
+
 
 
 
