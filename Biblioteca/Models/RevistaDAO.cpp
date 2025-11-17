@@ -1,34 +1,32 @@
 #include "RevistaDAO.h"
 
-bool RevistaDAO::insertarRevista(const std::shared_ptr<Revista>& revista) {
+bool RevistaDAO::insertar(const std::shared_ptr<Revista>& revista) {
     QSqlDatabase db = QSqlDatabase::database();
 
     if (!db.transaction()) {
-        qDebug() << "No se pudo iniciar transacción en RevistaDAO::insertarRevista()";
+        qDebug() << "No se pudo iniciar transacción en RevistaDAO::insertar()";
         return false;
     }
 
-    // Insertar en tabla Material (usa método protegido de la clase base)
     int idGenerado;
     if (!insertarEnMaterial(revista, idGenerado)) {
         db.rollback();
         return false;
     }
 
-    // Insertar en tabla Revista
     QSqlQuery query;
     query.prepare("INSERT INTO Revista (id_material, volumen) VALUES (:id, :volumen)");
     query.bindValue(":id", idGenerado);
     query.bindValue(":volumen", revista->getVolumen());
 
     if (!query.exec()) {
-        qDebug() << "Error SQL en RevistaDAO::insertarRevista():" << query.lastError().text();
+        qDebug() << "Error SQL en RevistaDAO::insertar():" << query.lastError().text();
         db.rollback();
         return false;
     }
 
     if (!db.commit()) {
-        qDebug() << "Error al confirmar transacción en RevistaDAO::insertarRevista()";
+        qDebug() << "Error al confirmar transacción en RevistaDAO::insertar()";
         db.rollback();
         return false;
     }
@@ -36,9 +34,50 @@ bool RevistaDAO::insertarRevista(const std::shared_ptr<Revista>& revista) {
     return true;
 }
 
-bool RevistaDAO::actualizarRevista(const std::shared_ptr<Revista>& revista) {
-    // Reutiliza el método de la clase base que ya maneja transacciones
-    return MaterialDAO::actualizar(revista);
+bool RevistaDAO::actualizar(const std::shared_ptr<Revista>& revista) {
+    bool ok = MaterialDAO::actualizar(revista);
+    if (!ok) return false;
+
+    QSqlQuery query;
+    query.prepare("UPDATE Revista SET volumen = :volumen WHERE id_material = :id");
+    query.bindValue(":volumen", revista->getVolumen());
+    query.bindValue(":id", revista->getID());
+
+    if (!query.exec()) {
+        qDebug() << "Error SQL en RevistaDAO::actualizar():" << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool RevistaDAO::eliminar(int id) {
+    QSqlDatabase db = QSqlDatabase::database();
+    if (!db.transaction()) {
+        qDebug() << "No se pudo iniciar transacción en RevistaDAO::eliminar()";
+        return false;
+    }
+
+    QSqlQuery q1;
+    q1.prepare("DELETE FROM Revista WHERE id_material = :id");
+    q1.bindValue(":id", id);
+    if (!q1.exec()) {
+        qDebug() << "Error SQL en RevistaDAO::eliminar() (tabla Revista):" << q1.lastError().text();
+        db.rollback();
+        return false;
+    }
+
+    if (!MaterialDAO::eliminar(id)) {
+        db.rollback();
+        return false;
+    }
+
+    if (!db.commit()) {
+        qDebug() << "Error al confirmar transacción en RevistaDAO::eliminar()";
+        db.rollback();
+        return false;
+    }
+
+    return true;
 }
 
 QVector<std::shared_ptr<Revista>> RevistaDAO::obtenerRevistas() {
@@ -46,7 +85,7 @@ QVector<std::shared_ptr<Revista>> RevistaDAO::obtenerRevistas() {
 
     QSqlQuery query;
     query.prepare(
-        "SELECT m.*, r.volumen "
+        "SELECT m.id_material, m.titulo, m.autor, m.anio_publicacion, m.disponible, r.volumen "
         "FROM Material m "
         "INNER JOIN Revista r ON m.id_material = r.id_material"
         );

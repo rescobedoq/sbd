@@ -8,9 +8,20 @@ private:
     int volumen;
 
 public:
+    // Constructor por defecto
+    Revista() : Material(0, "", "", 0, true), volumen(0) {}
+
     Revista(int id, QString titulo, QString autor, int anio, bool disponible, int volumen);
+
     QString obtenerTipo() const override;
-    int getVolumen()const{return volumen;}
+
+    // GETTER
+    int getVolumen() const { return volumen; }
+
+    // SETTER (agregado)
+    void setVolumen(int v) { volumen = v; }
 };
 
-#endif // REVISTA_H
+#endif
+
+
