@@ -1,9 +1,6 @@
 #include "TesisDAO.h"
-#include <QSqlQuery>
-#include <QSqlDatabase>
-#include <QDebug>
 
-bool TesisDAO::insertarTesis(const std::shared_ptr<Tesis>& tesis) {
+bool TesisDAO::insertar(const std::shared_ptr<Tesis>& tesis) {
     QSqlDatabase db = QSqlDatabase::database();
 
     if (!db.transaction()) {
@@ -11,14 +8,12 @@ bool TesisDAO::insertarTesis(const std::shared_ptr<Tesis>& tesis) {
         return false;
     }
 
-    // Insertar en tabla Material (usa método protegido de la clase base)
     int idGenerado;
     if (!insertarEnMaterial(tesis, idGenerado)) {
         db.rollback();
         return false;
     }
 
-    // Insertar en tabla Tesis
     QSqlQuery query;
     query.prepare("INSERT INTO Tesis (id_material, universidad) VALUES (:id, :universidad)");
     query.bindValue(":id", idGenerado);
@@ -39,9 +34,50 @@ bool TesisDAO::insertarTesis(const std::shared_ptr<Tesis>& tesis) {
     return true;
 }
 
-bool TesisDAO::actualizarTesis(const std::shared_ptr<Tesis>& tesis) {
-    // Reutiliza el método de la clase base que ya maneja transacciones
-    return MaterialDAO::actualizar(tesis);
+bool TesisDAO::actualizar(const std::shared_ptr<Tesis>& tesis) {
+    bool ok = MaterialDAO::actualizar(tesis);
+    if (!ok) return false;
+
+    QSqlQuery query;
+    query.prepare("UPDATE Tesis SET universidad = :universidad WHERE id_material = :id");
+    query.bindValue(":universidad", tesis->getUniversidad());
+    query.bindValue(":id", tesis->getID());
+
+    if (!query.exec()) {
+        qDebug() << "Error SQL en TesisDAO::actualizar():" << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool TesisDAO::eliminar(int id) {
+    QSqlDatabase db = QSqlDatabase::database();
+    if (!db.transaction()) {
+        qDebug() << "No se pudo iniciar transacción en TesisDAO::eliminar()";
+        return false;
+    }
+
+    QSqlQuery q1;
+    q1.prepare("DELETE FROM Tesis WHERE id_material = :id");
+    q1.bindValue(":id", id);
+    if (!q1.exec()) {
+        qDebug() << "Error SQL en TesisDAO::eliminar() (tabla Tesis):" << q1.lastError().text();
+        db.rollback();
+        return false;
+    }
+
+    if (!MaterialDAO::eliminar(id)) {
+        db.rollback();
+        return false;
+    }
+
+    if (!db.commit()) {
+        qDebug() << "Error al confirmar transacción en TesisDAO::eliminar()";
+        db.rollback();
+        return false;
+    }
+
+    return true;
 }
 
 QVector<std::shared_ptr<Tesis>> TesisDAO::obtenerTesis() {
@@ -49,7 +85,7 @@ QVector<std::shared_ptr<Tesis>> TesisDAO::obtenerTesis() {
 
     QSqlQuery query;
     query.prepare(
-        "SELECT m.*, t.universidad "
+        "SELECT m.id_material, m.titulo, m.autor, m.anio_publicacion, m.disponible, t.universidad "
         "FROM Material m "
         "INNER JOIN Tesis t ON m.id_material = t.id_material"
         );

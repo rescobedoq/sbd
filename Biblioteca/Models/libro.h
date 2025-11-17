@@ -8,10 +8,21 @@ private:
     QString genero;
 
 public:
+    // Constructor por defecto necesario para el Factory Method
+    Libro() : Material(0, "", "", 0, true), genero("") {}
+
     Libro(int id, QString titulo, QString autor, int anio, bool disponible, QString genero);
+
     QString obtenerTipo() const override;
-    QString getGenero() const {return genero;}
+
+    // GETTER
+    QString getGenero() const { return genero; }
+
+    // SETTER (agregado)
+    void setGenero(const QString& g) { genero = g; }
 };
 
-#endif // LIBRO_H
+#endif
+
+
 

@@ -1,66 +1,123 @@
 #include "MaterialController.h"
 #include "../Models/Libro.h"
 #include "../Models/Revista.h"
-#include "../Models/tesis.h"
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
+#include "../Models/Tesis.h"
 #include <QDebug>
 
-MaterialController::MaterialController() {}
+MaterialController::MaterialController() {
+    cargarMateriales();
+}
 
-bool MaterialController::cargarMateriales() {
+void MaterialController::cargarMateriales() {
     materiales.clear();
 
-    // Cargar todos los tipos
     auto libros = libroDAO.obtenerLibros();
     auto revistas = revistaDAO.obtenerRevistas();
     auto tesis = tesisDAO.obtenerTesis();
 
-    // Agregar al caché unificado
-    for (const auto& libro : libros) {
-        materiales.append(libro);
-    }
-    for (const auto& revista : revistas) {
-        materiales.append(revista);
-    }
-    for (const auto& t : tesis) {
-        materiales.append(t);
-    }
+    for (const auto& l : libros) materiales.append(l);
+    for (const auto& r : revistas) materiales.append(r);
+    for (const auto& t : tesis) materiales.append(t);
 
     qDebug() << "Materiales cargados:" << materiales.size();
-    return true;
 }
 
-/* Usar patron factory method con las funciones de los DAO:
- * libroDAO.insertar(libro)
- * revistaDAO.insertar(revista)
- * tesisDAO.insertar(tesis)
- */
-void MaterialController::agregarMaterial(std::shared_ptr<Material> material) {
-    materiales.append(material);
-}
+std::shared_ptr<Material> MaterialController::crearMaterial(
+    int tipo,
+    const QString& titulo,
+    const QString& autor,
+    int anio,
+    const QString& extra)
+{
+    Material* raw = MaterialFactory::crearMaterial(tipo);
+    if (!raw) return nullptr;
 
-/* Falta implementar leerMaterial()
- * Usar funciones del DAO materialDAO:
- * materialDAO.buscarMaterialPorId()
- *
- * Falta implementar actualizarMaterial()
- * Usar funciones del DAO materialDAO:
- * materialDAO.actualizar()
- *
- * Falta implementar  eliminarMaterial()
- * Usar funciones del DAO materialDAO:
- * materialDAO.eliminar()
- */
+    std::shared_ptr<Material> material(raw);
 
-void MaterialController::eliminarMaterial(int indice) {
-    if (indice >= 0 && indice < materiales.size()) {
-        materiales.remove(indice);
+    int nuevoID = materiales.size() + 1;
+
+    material->setID(nuevoID);
+    material->setTitulo(titulo);
+    material->setAutor(autor);
+    material->setAnio(anio);
+    material->setDisponible(true);
+
+    if (tipo == 1) {
+        auto libroPtr = std::static_pointer_cast<Libro>(material);
+        libroPtr->setGenero(extra);
+        libroDAO.insertar(libroPtr);
     }
+    else if (tipo == 2) {
+        auto revistaPtr = std::static_pointer_cast<Revista>(material);
+        revistaPtr->setVolumen(extra.toInt());
+        revistaDAO.insertar(revistaPtr);
+    }
+    else if (tipo == 3) {
+        auto tesisPtr = std::static_pointer_cast<Tesis>(material);
+        tesisPtr->setUniversidad(extra);
+        tesisDAO.insertar(tesisPtr);
+    }
+
+    materiales.append(material);
+    return material;
 }
 
-QVector<std::shared_ptr<Material>>& MaterialController::obtenerMateriales() {
+QVector<std::shared_ptr<Material>> MaterialController::listarMateriales() {
     return materiales;
+}
+
+bool MaterialController::actualizarMaterial(
+    int id,
+    const QString& titulo,
+    const QString& autor,
+    int anio,
+    const QString& extra)
+{
+    for (auto& material : materiales) {
+        if (material->getID() == id) {
+
+            material->setTitulo(titulo);
+            material->setAutor(autor);
+            material->setAnio(anio);
+
+            QString tipo = material->obtenerTipo();
+
+            if (tipo == "Libro") {
+                auto l = std::static_pointer_cast<Libro>(material);
+                l->setGenero(extra);
+                libroDAO.actualizar(l);
+            }
+            else if (tipo == "Revista") {
+                auto r = std::static_pointer_cast<Revista>(material);
+                r->setVolumen(extra.toInt());
+                revistaDAO.actualizar(r);
+            }
+            else if (tipo == "Tesis") {
+                auto t = std::static_pointer_cast<Tesis>(material);
+                t->setUniversidad(extra);
+                tesisDAO.actualizar(t);
+            }
+
+            return true;
+        }
+    }
+    return false;
+}
+
+bool MaterialController::eliminarMaterial(int id) {
+
+    for (int i = 0; i < materiales.size(); i++) {
+        if (materiales[i]->getID() == id) {
+
+            QString tipo = materiales[i]->obtenerTipo();
+
+            if (tipo == "Libro")          libroDAO.eliminar(id);
+            else if (tipo == "Revista")   revistaDAO.eliminar(id);
+            else if (tipo == "Tesis")     tesisDAO.eliminar(id);
+
+            materiales.remove(i);
+            return true;
+        }
+    }
+    return false;
 }

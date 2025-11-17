@@ -8,11 +8,22 @@ private:
     QString universidad;
 
 public:
+    // Constructor por defecto
+    Tesis() : Material(0, "", "", 0, true), universidad("") {}
+
     Tesis(int id, QString titulo, QString autor, int anio, bool disponible, QString universidad);
+
     QString obtenerTipo() const override;
-    QString getUniversidad()const{return universidad;}
+
+    // GETTER
+    QString getUniversidad() const { return universidad; }
+
+    // SETTER (agregado)
+    void setUniversidad(const QString& u) { universidad = u; }
 };
 
-#endif // TESIS_H
+#endif
+
+
 
 

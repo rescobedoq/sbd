@@ -45,6 +45,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 
         Views/UsuarioForm.h Views/UsuarioForm.cpp Views/UsuarioForm.ui
         Views/MaterialesForm.h Views/MaterialesForm.cpp Views/MaterialesForm.ui
+        Models/MaterialFactory.h Models/MaterialFactory.cpp
+
 
     )
 # Define target properties for Android with Qt 6 as:
