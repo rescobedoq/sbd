@@ -15,6 +15,9 @@ UsuarioForm::UsuarioForm(UsuarioController* controller, int tipo, std::shared_pt
         ui->btnAccionUsuario->setText("Guardar");
         ui->txtIDUsuario->setText(QString::number(usuario->getId()));
         ui->txtNombreUsuario->setText(usuario->getNombre());
+        ui->txtIDUsuario->setReadOnly(true);
+        ui->txtIDUsuario->setEnabled(false);
+        ui->txtIDUsuario->setFocusPolicy(Qt::NoFocus);
     }
 }
 
@@ -45,8 +48,11 @@ void UsuarioForm::on_btnAccionUsuario_clicked(){
         }
 
     } else if (tipoVentana == 2) {
-       qDebug() << "llamando a actulizarUsuario():";
-        QMessageBox::information(this, "Usuario actualizado", "Los cambios fueron guardados.");
+        if(controllerUsuario->actualizarUsuario(id, nombre)){
+            QMessageBox::information(this, "Usuario Actualizado", "El usuario se actualizo correctamente.");
+        } else {
+            QMessageBox::warning(this, "Error al actualizar", "No se pudo actualizar el usuario");
+        }
     }
     emit usuarioActualizado();
     close();

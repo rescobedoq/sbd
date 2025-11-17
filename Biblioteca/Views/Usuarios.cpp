@@ -5,6 +5,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QVector>
+#include <QMessageBox>
 #include "../Models/usuario.h"
 #include "UsuarioForm.h"
 
@@ -63,7 +64,6 @@ void Usuarios::on_btnNuevoUsuario_clicked() {
 }
 
 void Usuarios::on_btnEditarUsuario_clicked() {
-    // Crear una nueva ventana de detalles
     int fila = ui->tblUsuarios->currentRow();
     if (fila < 0) return; // nada seleccionado
 
@@ -75,17 +75,18 @@ void Usuarios::on_btnEditarUsuario_clicked() {
 }
 
 void Usuarios::on_btnEliminarUsuario_clicked() {
-    // Crear una nueva ventana de detalles
     int fila = ui->tblUsuarios->currentRow();
     if (fila < 0) return; // nada seleccionado
 
     std::shared_ptr<Usuario> usuarioSeleccionado = controllerUsuario->obtenerUsuarios()[fila];
-    qDebug() << "Llamar a eliminarUsuario(int id) con id: " + QString::number(usuarioSeleccionado->getId());
-    // Mostrar la ventana
+    if(controllerUsuario->eliminarUsuario(usuarioSeleccionado->getId())){
+        QMessageBox::information(this, "Usuario Eliminado", "El usuario se elimino correctamente.");
+    } else {
+        QMessageBox::warning(this, "Error al eliminar", "No se pudo eliminar el usuario");
+    }
     cargarTabla();
 }
 
-Usuarios::~Usuarios()
-{
+Usuarios::~Usuarios() {
     delete ui;
 }
