@@ -1,9 +1,7 @@
 #include <QApplication>
 #include <QDebug>
-#include "Models/libro.h"
-#include "Models/revista.h"
-#include "Models/tesis.h"
-#include "Models/usuario.h"
+#include "Models/Prestamo.h"
+#include "Models/PrestamoDAO.h"
 #include "Models/BaseDatos.h"
 #include "Views/Materiales.h"
 #include "Views/Usuarios.h"
@@ -25,6 +23,8 @@ int main(int argc, char *argv[])
     LibroDAO libroDAO;
     RevistaDAO revistaDAO;
     TesisDAO tesisDAO;
+    PrestamoDAO prestamoDAO;
+    //Codigo de prueba
     /*controllerUsuario.agregarUsuario(1, "Gustavo Turpo");
     controllerUsuario.agregarUsuario(2, "Daniel Torres");
     controllerUsuario.agregarUsuario(3, "María López");
@@ -40,7 +40,14 @@ int main(int argc, char *argv[])
     std::shared_ptr<Tesis> tesis;
     tesis = std::make_shared<Tesis>(4, "Tesis 1", "Juan Perez", 2025, 1, "UNSA");
     tesisDAO.insertarTesis(tesis);
-    */
+
+    QDate hoy = QDate::currentDate();
+    QDate limite = hoy.addDays(7);
+    std::shared_ptr<Prestamo> prestamo;
+    prestamo = std::make_shared<Prestamo>(2, 2, 2, hoy, limite);
+    prestamoDAO.insertarPrestamo(prestamo);
+    prestamoDAO.registrarDevolucion(1, hoy);*/
+
     controllerUsuario.cargarUsuarios();
     controllerMateriales.cargarMateriales();
 
