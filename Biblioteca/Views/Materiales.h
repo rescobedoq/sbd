@@ -14,10 +14,14 @@ class Materiales : public QWidget
 
 public:
     explicit Materiales(MaterialController* controller, QWidget *parent = nullptr);
+    void cargarTabla();
     ~Materiales();
 
 private slots:
     void on_agregarMateButton_3_clicked();
+    void on_crearMaterialButton_clicked();
+    void on_editarMaterialButton_clicked();
+    void on_eliminarMaterialButton_clicked();
 
 private:
     MaterialController* controllerMaterial;

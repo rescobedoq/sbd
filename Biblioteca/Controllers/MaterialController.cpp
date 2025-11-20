@@ -32,7 +32,7 @@ std::shared_ptr<Material> MaterialController::crearMaterial(
     Material* raw = MaterialFactory::crearMaterial(tipo);
     if (!raw) return nullptr;
 
-    std::shared_ptr<Material> material(raw);
+   std::shared_ptr<Material> material(raw);
 
     int nuevoID = materiales.size() + 1;
 
