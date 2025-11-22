@@ -48,6 +48,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Models/MaterialFactory.h Models/MaterialFactory.cpp
         Models/Prestamo.h Models/Prestamo.cpp
         Models/PrestamoDAO.h Models/PrestamoDAO.cpp
+        Controllers/PrestamoController.h Controllers/PrestamoController.cpp
+
 
 
 
