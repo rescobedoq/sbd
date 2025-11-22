@@ -19,6 +19,7 @@ public:
 private slots:
     void on_accionMaterialButton_clicked();
     void on_cancelarMaterialButton_clicked();
+
 signals:
     void materialActualizado();
 

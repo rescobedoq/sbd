@@ -27,12 +27,13 @@ std::shared_ptr<Material> MaterialController::crearMaterial(
     const QString& titulo,
     const QString& autor,
     int anio,
-    const QString& extra)
+    const QString& extra,
+    bool disponible)
 {
     Material* raw = MaterialFactory::crearMaterial(tipo);
     if (!raw) return nullptr;
 
-   std::shared_ptr<Material> material(raw);
+    std::shared_ptr<Material> material(raw);
 
     int nuevoID = materiales.size() + 1;
 
@@ -40,7 +41,7 @@ std::shared_ptr<Material> MaterialController::crearMaterial(
     material->setTitulo(titulo);
     material->setAutor(autor);
     material->setAnio(anio);
-    material->setDisponible(true);
+    material->setDisponible(disponible);
 
     if (tipo == 1) {
         auto libroPtr = std::static_pointer_cast<Libro>(material);
@@ -71,7 +72,8 @@ bool MaterialController::actualizarMaterial(
     const QString& titulo,
     const QString& autor,
     int anio,
-    const QString& extra)
+    const QString& extra,
+    bool disponible)
 {
     for (auto& material : materiales) {
         if (material->getID() == id) {
@@ -79,6 +81,7 @@ bool MaterialController::actualizarMaterial(
             material->setTitulo(titulo);
             material->setAutor(autor);
             material->setAnio(anio);
+            material->setDisponible(disponible);
 
             QString tipo = material->obtenerTipo();
 
