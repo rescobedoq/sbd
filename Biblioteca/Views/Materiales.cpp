@@ -5,7 +5,9 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QVector>
+#include <QMessageBox>
 #include "../Models/material.h"
+#include "MaterialesForm.h"
 
 /*
  * Modificar interfaz y agregar pantallas para incluir:
@@ -20,9 +22,12 @@ Materiales::Materiales(MaterialController* controller, QWidget *parent) :
     ui(new Ui::Materiales)
 {
     ui->setupUi(this);
+    cargarTabla();
 
+}
+void Materiales::cargarTabla(){
     // Obtener lista de materiales desde el controlador
-    QVector<std::shared_ptr<Material>> materiales = controller->listarMateriales();
+    QVector<std::shared_ptr<Material>> materiales = controllerMaterial->listarMateriales();
 
     // Configura la tabla
     ui->tablaMateriales->setColumnCount(5);
@@ -62,10 +67,59 @@ Materiales::~Materiales()
 void Materiales::on_agregarMateButton_3_clicked()
 {
     // Crear una nueva ventana de detalles
-    /*MaterialesForm *form = new MaterialesForm(controllerMaterial, 1);
-    connect(form, &MaterialesForm::materialActualizado, this, &Materiales::cargarTabla);*/
+}
 
-    // Mostrar la ventana
-    //form->show();*
+void Materiales::on_crearMaterialButton_clicked(){
+    MaterialesForm *form=new MaterialesForm(controllerMaterial, 1);
+    connect(form, &MaterialesForm::materialActualizado, this, &Materiales::cargarTabla);
+    form->show();
+}
+void Materiales::on_editarMaterialButton_clicked(){
+    int row = ui->tablaMateriales->currentRow();
+
+    if (row < 0) {
+        QMessageBox::warning(this, "Advertencia", "Por favor selecciona un material de la tabla");
+        return;
+    }
+
+    QVector<std::shared_ptr<Material>> materiales = controllerMaterial->listarMateriales();
+
+    if (row < materiales.size()) {
+        MaterialesForm *form = new MaterialesForm(controllerMaterial, 2, materiales[row]);
+        connect(form, &MaterialesForm::materialActualizado, this, &Materiales::cargarTabla);
+        form->show();
+    }
+}
+
+void Materiales::on_eliminarMaterialButton_clicked(){
+    int row = ui->tablaMateriales->currentRow();
+
+    if (row < 0) {
+        QMessageBox::warning(this, "Advertencia", "Por favor selecciona un material de la tabla");
+        return;
+    }
+
+    QVector<std::shared_ptr<Material>> materiales = controllerMaterial->listarMateriales();
+
+    if (row < materiales.size()) {
+        int id = materiales[row]->getID();
+        QString titulo = materiales[row]->getTitulo();
+
+        QMessageBox::StandardButton respuesta = QMessageBox::question(
+            this,
+            "Confirmar eliminación",
+            QString("¿Estás seguro de eliminar el material '%1'?").arg(titulo),
+            QMessageBox::Yes | QMessageBox::No
+            );
+
+        if (respuesta == QMessageBox::Yes) {
+            if (controllerMaterial->eliminarMaterial(id)) {
+                QMessageBox::information(this, "Éxito", "Material eliminado correctamente");
+                cargarTabla();
+            } else {
+                QMessageBox::critical(this, "Error", "No se pudo eliminar el material");
+            }
+        }
+    }
 }
 

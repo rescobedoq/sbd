@@ -18,9 +18,8 @@ public:
     // Cargar todos los materiales desde la BD
     void cargarMateriales();
 
-    // READ - dos formas: devolver copia (listar) o referencia directa
+    // READ - devolver copia
     QVector<std::shared_ptr<Material>> listarMateriales();
-    QVector<std::shared_ptr<Material>>& obtenerMateriales();
 
     // CREATE – usando FACTORY
     std::shared_ptr<Material> crearMaterial(
@@ -28,7 +27,8 @@ public:
         const QString& titulo,
         const QString& autor,
         int anio,
-        const QString& extra
+        const QString& extra,
+        bool disponible = true  // Por defecto disponible
         );
 
     // UPDATE
@@ -37,7 +37,8 @@ public:
         const QString& titulo,
         const QString& autor,
         int anio,
-        const QString& extra
+        const QString& extra,
+        bool disponible = true
         );
 
     // DELETE
