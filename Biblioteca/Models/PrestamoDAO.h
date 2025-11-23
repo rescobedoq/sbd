@@ -15,7 +15,7 @@ public:
 
     // Pendiente de implementar
     // En vista de usuario para ver sus prestamos realizados o pendientes
-    QVector<std::shared_ptr<Prestamo>> obtenerPorUsuario(int usuarioId);
+    //QVector<std::shared_ptr<Prestamo>> obtenerPorUsuario(int usuarioId);
 
     // Registrar devolución
     bool registrarDevolucion(int prestamoId, const QDate& fechaDevolucion);
