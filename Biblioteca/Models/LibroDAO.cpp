@@ -1,8 +1,8 @@
 #include "LibroDAO.h"
-
+#include "BaseDatos.h"
 // Inserta libro (inserta en Material y en tabla Libro)
-bool LibroDAO::insertar(const std::shared_ptr<Libro>& libro) {
-    QSqlDatabase db = QSqlDatabase::database();
+bool LibroDAO::insertar(const std::shared_ptr<Libro>& libro){
+    QSqlDatabase db = BaseDatos::getBD();
 
     if (!db.transaction()) {
         qDebug() << "No se pudo iniciar transacción en LibroDAO::insertar()";
@@ -17,7 +17,7 @@ bool LibroDAO::insertar(const std::shared_ptr<Libro>& libro) {
     }
 
     // Insertar en tabla Libro
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare("INSERT INTO Libro (id_material, genero) VALUES (:id, :genero)");
     query.bindValue(":id", idGenerado);
     query.bindValue(":genero", libro->getGenero());
@@ -45,7 +45,7 @@ bool LibroDAO::actualizar(const std::shared_ptr<Libro>& libro) {
     if (!ok) return false;
 
     // Actualizar campos específicos de Libro (tabla Libro)
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare("UPDATE Libro SET genero = :genero WHERE id_material = :id");
     query.bindValue(":genero", libro->getGenero());
     query.bindValue(":id", libro->getID());
@@ -59,13 +59,13 @@ bool LibroDAO::actualizar(const std::shared_ptr<Libro>& libro) {
 
 bool LibroDAO::eliminar(int id) {
     // Primero eliminar de tabla Libro y luego de Material (o usar método de la base)
-    QSqlDatabase db = QSqlDatabase::database();
+    QSqlDatabase db = BaseDatos::getBD();
     if (!db.transaction()) {
         qDebug() << "No se pudo iniciar transacción en LibroDAO::eliminar()";
         return false;
     }
 
-    QSqlQuery q1;
+    QSqlQuery q1(BaseDatos::getBD());
     q1.prepare("DELETE FROM Libro WHERE id_material = :id");
     q1.bindValue(":id", id);
     if (!q1.exec()) {
@@ -92,7 +92,7 @@ bool LibroDAO::eliminar(int id) {
 QVector<std::shared_ptr<Libro>> LibroDAO::obtenerLibros() {
     QVector<std::shared_ptr<Libro>> lista;
 
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare(
         "SELECT m.id_material, m.titulo, m.autor, m.anio_publicacion, m.disponible, l.genero "
         "FROM Material m "

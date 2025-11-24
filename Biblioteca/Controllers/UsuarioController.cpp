@@ -56,8 +56,9 @@ bool UsuarioController::eliminarUsuario(int id) {
             qWarning() << "Error de Controller en eliminarUsuario(): Usuario no encontrado en memoria" << Qt::endl;
             return false;
         }
+    } else {
+        qWarning() << "Error de Controller en eliminarUsuario(): ID invalido" << Qt::endl;
     }
-    qWarning() << "Error de Controller en eliminarUsuario(): ID invalido" << Qt::endl;
     return false;
 }
 

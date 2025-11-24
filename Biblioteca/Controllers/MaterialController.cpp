@@ -35,9 +35,6 @@ std::shared_ptr<Material> MaterialController::crearMaterial(
 
     std::shared_ptr<Material> material(raw);
 
-    int nuevoID = materiales.size() + 1;
-
-    material->setID(nuevoID);
     material->setTitulo(titulo);
     material->setAutor(autor);
     material->setAnio(anio);
@@ -119,6 +116,16 @@ bool MaterialController::eliminarMaterial(int id) {
             else if (tipo == "Tesis")     tesisDAO.eliminar(id);
 
             materiales.remove(i);
+            return true;
+        }
+    }
+    return false;
+}
+bool MaterialController::cambiarDisponibilidad(int id, bool disponible) {
+    for (auto& material : materiales) {
+        if (material->getID() == id) {
+            materialDAO.actualizarDisponibilidad(id, disponible);
+            material->setDisponible(disponible);
             return true;
         }
     }

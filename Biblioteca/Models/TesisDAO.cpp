@@ -1,20 +1,20 @@
 #include "TesisDAO.h"
+#include "BaseDatos.h"
 
 bool TesisDAO::insertar(const std::shared_ptr<Tesis>& tesis) {
-    QSqlDatabase db = QSqlDatabase::database();
+    QSqlDatabase db = BaseDatos::getBD();
 
     if (!db.transaction()) {
         qDebug() << "No se pudo iniciar transacción en TesisDAO::insertar()";
         return false;
     }
-
     int idGenerado;
     if (!insertarEnMaterial(tesis, idGenerado)) {
         db.rollback();
         return false;
     }
 
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare("INSERT INTO Tesis (id_material, universidad) VALUES (:id, :universidad)");
     query.bindValue(":id", idGenerado);
     query.bindValue(":universidad", tesis->getUniversidad());
@@ -38,7 +38,7 @@ bool TesisDAO::actualizar(const std::shared_ptr<Tesis>& tesis) {
     bool ok = MaterialDAO::actualizar(tesis);
     if (!ok) return false;
 
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare("UPDATE Tesis SET universidad = :universidad WHERE id_material = :id");
     query.bindValue(":universidad", tesis->getUniversidad());
     query.bindValue(":id", tesis->getID());
@@ -51,13 +51,13 @@ bool TesisDAO::actualizar(const std::shared_ptr<Tesis>& tesis) {
 }
 
 bool TesisDAO::eliminar(int id) {
-    QSqlDatabase db = QSqlDatabase::database();
+    QSqlDatabase db = BaseDatos::getBD();
     if (!db.transaction()) {
         qDebug() << "No se pudo iniciar transacción en TesisDAO::eliminar()";
         return false;
     }
 
-    QSqlQuery q1;
+    QSqlQuery q1(BaseDatos::getBD());
     q1.prepare("DELETE FROM Tesis WHERE id_material = :id");
     q1.bindValue(":id", id);
     if (!q1.exec()) {
@@ -83,7 +83,7 @@ bool TesisDAO::eliminar(int id) {
 QVector<std::shared_ptr<Tesis>> TesisDAO::obtenerTesis() {
     QVector<std::shared_ptr<Tesis>> lista;
 
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare(
         "SELECT m.id_material, m.titulo, m.autor, m.anio_publicacion, m.disponible, t.universidad "
         "FROM Material m "

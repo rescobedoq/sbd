@@ -1,29 +1,56 @@
 #include "PrestamoController.h"
 #include "../Models/Prestamo.h"
+#include "MaterialController.h"
 #include <QDebug>
 
-// ----------------------------------------------------
 // Constructor
-// ----------------------------------------------------
-PrestamoController::PrestamoController()
-{
-    // No requiere inicialización adicional
+// Rebibe un MaterialController para actualizar su cache
+PrestamoController::PrestamoController(MaterialController& mc) : materialController(mc) {}
+
+bool PrestamoController::cargarPrestamos() {
+    prestamos = dao.obtenerPrestamos();
+    return true;
 }
 
-// ----------------------------------------------------
-// Crear préstamo usando PrestamoDAO
-// ----------------------------------------------------
-bool PrestamoController::crearPrestamo(const std::shared_ptr<Prestamo>& prestamo)
-{
-    return dao.insertarPrestamo(prestamo);
+bool PrestamoController::crearPrestamo(int usuarioID, int materialID, QDate& fechaPrestamo, QDate& fechaLimite)
+{   
+    std::shared_ptr<Prestamo> prestamo;
+    //prestamo = std::make_shared<Prestamo>(usuarioID, materialID, fechaPrestamo, fechaLimite);
+    for (const auto& p : prestamos) {
+        if (p->getMaterialId() == materialID) {
+            qDebug() << "Validación PrestamoController::crearPrestamo(): Material ya prestado";
+            return false;
+        }
+    }
+    int idGenerado;
+    if(dao.insertarPrestamo(prestamo, idGenerado)){
+        prestamos.append(prestamo);
+        materialController.cambiarDisponibilidad(materialID,false);
+        return true;
+    }
+    return false;
 }
 
-// ----------------------------------------------------
-// Registrar devolución usando el DAO
-// ----------------------------------------------------
-bool PrestamoController::registrarDevolucion(int prestamoId, const QDate& fechaDev)
-{
-    return dao.registrarDevolucion(prestamoId, fechaDev);
+bool PrestamoController::registrarDevolucion(int prestamoId, const QDate& fechaDev) {
+    if (!dao.registrarDevolucion(prestamoId, fechaDev)) {
+        qDebug() << "Error al registrar devolución en la BD";
+        return false;
+    }
+
+    // Actualiza el objeto en memoria (cache de préstamos)
+    for (const auto& p : prestamos) {
+        if (p->getId() == prestamoId) {
+            // Marca el material como disponible en BD y cache
+            if (!materialController.cambiarDisponibilidad(p->getMaterialId(), true)) {
+                qDebug() << "Error al actualizar disponibilidad del material";
+                return false;
+            }
+            return true; // retorno tras actualizar el préstamo encontrado
+        }
+    }
+
+    qDebug() << "Prestamo no encontrado en cache";
+    return false;
 }
 
 // ----------------------------------------------------
@@ -69,3 +96,6 @@ QList<std::shared_ptr<Prestamo>> PrestamoController::obtenerHistorialUsuario(int
     return lista;
 }
 
+QVector<std::shared_ptr<Prestamo>>& PrestamoController::obtenerPrestamos() {
+    return prestamos;
+}

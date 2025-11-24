@@ -61,6 +61,7 @@ MaterialesForm::MaterialesForm(MaterialController* controller, int tipo, std::sh
         ui->txtExtraMaterial->setPlaceholderText("Ej: Ficción, Biografía, etc.");
 
         // Por defecto disponible = true
+        ui->checkDisponible->setEnabled(false);
         ui->checkDisponible->setChecked(true);
     }
     else if (tipo == 2) {
@@ -97,6 +98,7 @@ MaterialesForm::MaterialesForm(MaterialController* controller, int tipo, std::sh
             }
 
             // Configurar disponibilidad
+            ui->checkDisponible->setEnabled(false);
             ui->checkDisponible->setChecked(material->getDisponible());
 
             ui->txtIDMaterial->setReadOnly(true);
@@ -147,9 +149,7 @@ void MaterialesForm::on_accionMaterialButton_clicked()
         // Convertir índice del combo a tipo numérico: 0=Libro(1), 1=Revista(2), 2=Tesis(3)
         int tipoNum = tipoIndex + 1;
 
-        auto nuevoMaterial = controllerMaterial->crearMaterial(tipoNum, titulo, autor, anio, extra, disponible);
-
-        if (nuevoMaterial) {
+        if (controllerMaterial->crearMaterial(tipoNum, titulo, autor, anio, extra, disponible)) {
             QMessageBox::information(this, "Éxito", "Material creado correctamente");
             emit materialActualizado();
             close();

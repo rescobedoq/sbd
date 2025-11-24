@@ -30,21 +30,21 @@ void Materiales::cargarTabla(){
     QVector<std::shared_ptr<Material>> materiales = controllerMaterial->listarMateriales();
 
     // Configura la tabla
-    ui->tablaMateriales->setColumnCount(5);
+    ui->tablaMateriales->setColumnCount(6);
     ui->tablaMateriales->setHorizontalHeaderLabels(
-        {"Tipo", "Título", "Autor", "Año", "Disponible"}
+        {"ID", "Tipo", "Título", "Autor", "Año", "Disponible"}
         );
     ui->tablaMateriales->setRowCount(materiales.size());
 
     // Llenar tabla
     for (int i = 0; i < materiales.size(); ++i) {
         std::shared_ptr<Material> m = materiales[i];
-
-        ui->tablaMateriales->setItem(i, 0, new QTableWidgetItem(m->obtenerTipo()));
-        ui->tablaMateriales->setItem(i, 1, new QTableWidgetItem(m->getTitulo()));
-        ui->tablaMateriales->setItem(i, 2, new QTableWidgetItem(m->getAutor()));
-        ui->tablaMateriales->setItem(i, 3, new QTableWidgetItem(QString::number(m->getAnio())));
-        ui->tablaMateriales->setItem(i, 4, new QTableWidgetItem(m->getDisponible() ? "Sí" : "No"));
+        ui->tablaMateriales->setItem(i, 0, new QTableWidgetItem(QString::number(m->getID())));
+        ui->tablaMateriales->setItem(i, 1, new QTableWidgetItem(m->obtenerTipo()));
+        ui->tablaMateriales->setItem(i, 2, new QTableWidgetItem(m->getTitulo()));
+        ui->tablaMateriales->setItem(i, 3, new QTableWidgetItem(m->getAutor()));
+        ui->tablaMateriales->setItem(i, 4, new QTableWidgetItem(QString::number(m->getAnio())));
+        ui->tablaMateriales->setItem(i, 5, new QTableWidgetItem(m->getDisponible() ? "Sí" : "No"));
     }
 
     // Ajustes visuales
@@ -57,16 +57,17 @@ void Materiales::cargarTabla(){
     layout()->activate();   // recalcula el layout
     adjustSize();
     resize(width() + 20, height());
+
+    QHeaderView *header = ui->tablaMateriales->horizontalHeader();
+
+    header->setSectionResizeMode(QHeaderView::Fixed);   // Todas fijas por defecto
+    header->setSectionResizeMode(2, QHeaderView::Stretch);
+    header->setSectionResizeMode(3, QHeaderView::Stretch);
 }
 
 Materiales::~Materiales()
 {
     delete ui;
-}
-
-void Materiales::on_agregarMateButton_3_clicked()
-{
-    // Crear una nueva ventana de detalles
 }
 
 void Materiales::on_crearMaterialButton_clicked(){

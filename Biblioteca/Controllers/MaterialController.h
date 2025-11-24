@@ -41,11 +41,14 @@ public:
         bool disponible = true
         );
 
+    bool cambiarDisponibilidad(int id, bool disponible);
+
     // DELETE
     bool eliminarMaterial(int id);
 
 private:
     // DAOs
+    MaterialDAO materialDAO;
     LibroDAO libroDAO;
     RevistaDAO revistaDAO;
     TesisDAO tesisDAO;

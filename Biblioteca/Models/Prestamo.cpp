@@ -1,9 +1,10 @@
 #include "Prestamo.h"
 
-Prestamo::Prestamo(int id, int usuarioId, int materialId,
-                   const QDate& fechaPrestamo, const QDate& fechaLimite,
+Prestamo::Prestamo(int id, int usuarioId, int materialId, const QString& nombreUsuario,
+                   const QString& nombreMaterial, const QDate& fechaPrestamo, const QDate& fechaLimite,
                    bool devuelto, const QDate& fechaDev)
     : id(id), usuarioId(usuarioId), materialId(materialId), fechaPrestamo(fechaPrestamo),
+      nombreMaterial(nombreMaterial), nombreUsuario(nombreUsuario),
       fechaLimiteDevolucion(fechaLimite),  devuelto(devuelto), fechaDevolucion(fechaDev) {}
 
 // Getters
@@ -15,6 +16,12 @@ int Prestamo::getUsuarioId() const{
 }
 int Prestamo::getMaterialId() const{
     return materialId;
+}
+QString Prestamo::getNombreUsuario() const{
+    return nombreUsuario;
+}
+QString Prestamo::getNombreMaterial() const{
+    return nombreMaterial;
 }
 QDate Prestamo::getFechaPrestamo() const{
     return fechaPrestamo;
@@ -30,6 +37,9 @@ bool Prestamo::estaDevuelto() const {
 }
 
 // Setters (solo para devolución)
+void Prestamo::setID(int id){
+    this->id = id;
+}
 void Prestamo::setFechaDevolucionReal(const QDate& fecha){
     fechaDevolucion = fecha;
 }

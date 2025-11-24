@@ -1,11 +1,12 @@
 #include "MaterialDAO.h"
+#include "BaseDatos.h"
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlDatabase>
 #include <QDebug>
 
 bool MaterialDAO::insertarEnMaterial(const std::shared_ptr<Material>& m, int& idGenerado) {
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare(
         "INSERT INTO Material (titulo, autor, anio_publicacion, disponible) "
         "VALUES (:titulo, :autor, :anio, :disponible)"
@@ -21,11 +22,12 @@ bool MaterialDAO::insertarEnMaterial(const std::shared_ptr<Material>& m, int& id
     }
 
     idGenerado = query.lastInsertId().toInt();
+    m->setID(idGenerado);
     return true;
 }
 
 bool MaterialDAO::actualizarEnMaterial(const std::shared_ptr<Material>& m) {
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare(
         "UPDATE Material SET titulo = :titulo, autor = :autor, "
         "anio_publicacion = :anio, disponible = :disponible "
@@ -78,7 +80,7 @@ std::shared_ptr<Material> MaterialDAO::crearMaterialDesdeQuery(QSqlQuery& query)
 QVector<std::shared_ptr<Material>> MaterialDAO::obtenerTodos() {
     QVector<std::shared_ptr<Material>> lista;
 
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare(
         "SELECT m.*, l.genero, r.volumen, t.universidad "
         "FROM Material m "
@@ -103,7 +105,7 @@ QVector<std::shared_ptr<Material>> MaterialDAO::obtenerTodos() {
 }
 
 std::shared_ptr<Material> MaterialDAO::buscarMaterialPorId(int id) {
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare(
         "SELECT m.*, l.genero, r.volumen, t.universidad "
         "FROM Material m "
@@ -127,7 +129,7 @@ std::shared_ptr<Material> MaterialDAO::buscarMaterialPorId(int id) {
 }
 
 bool MaterialDAO::actualizar(const std::shared_ptr<Material>& m) {
-    QSqlDatabase db = QSqlDatabase::database();
+    QSqlDatabase db = BaseDatos::getBD();
 
     if (!db.transaction()) {
         qDebug() << "No se pudo iniciar transacción en actualizar()";
@@ -143,7 +145,7 @@ bool MaterialDAO::actualizar(const std::shared_ptr<Material>& m) {
     // Actualizar tabla hija según tipo
     QString tipo = m->obtenerTipo();
     bool exitoHija = false;
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
 
     if (tipo == "Libro") {
         auto libro = std::dynamic_pointer_cast<Libro>(m);
@@ -183,36 +185,32 @@ bool MaterialDAO::actualizar(const std::shared_ptr<Material>& m) {
 }
 
 bool MaterialDAO::eliminar(int id) {
-    QSqlDatabase db = QSqlDatabase::database();
-
-    if (!db.transaction()) {
-        qDebug() << "No se pudo iniciar transacción en eliminar()";
-        return false;
-    }
+    QSqlDatabase db = BaseDatos::getBD();
 
     // Eliminar de tablas hijas (por foreign key cascade o manualmente)
     // Si tienes ON DELETE CASCADE configurado, solo necesitas eliminar de Material
-    QSqlQuery query;
+    QSqlQuery check(BaseDatos::getBD());
+    check.exec("PRAGMA foreign_key_check;");
+    while (check.next()) {
+        qDebug() << "FK FAIL -> Tabla:" << check.value(0).toString()
+        << "Fila:" << check.value(1).toInt()
+        << "ID:" << check.value(2).toString()
+        << "FK Info:" << check.value(3).toString();
+    }
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare("DELETE FROM Material WHERE id_material = :id");
     query.bindValue(":id", id);
 
     if (!query.exec()) {
-        qDebug() << "Error SQL en eliminar(" << id << "):" << query.lastError().text();
+        qDebug() << "Error SQL en MaterialDAO::eliminar(" << id << "):" << query.lastError().text();
         db.rollback();
         return false;
     }
-
-    if (!db.commit()) {
-        qDebug() << "Error al confirmar transacción en eliminar()";
-        db.rollback();
-        return false;
-    }
-
     return true;
 }
 
 bool MaterialDAO::actualizarDisponibilidad(int id, bool disponible) {
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare("UPDATE Material SET disponible = :disponible WHERE id_material = :id");
     query.bindValue(":id", id);
     query.bindValue(":disponible", disponible);

@@ -1,20 +1,20 @@
 #include "RevistaDAO.h"
+#include "BaseDatos.h"
 
 bool RevistaDAO::insertar(const std::shared_ptr<Revista>& revista) {
-    QSqlDatabase db = QSqlDatabase::database();
+    QSqlDatabase db = BaseDatos::getBD();
 
     if (!db.transaction()) {
         qDebug() << "No se pudo iniciar transacción en RevistaDAO::insertar()";
         return false;
     }
-
     int idGenerado;
     if (!insertarEnMaterial(revista, idGenerado)) {
         db.rollback();
         return false;
     }
 
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare("INSERT INTO Revista (id_material, volumen) VALUES (:id, :volumen)");
     query.bindValue(":id", idGenerado);
     query.bindValue(":volumen", revista->getVolumen());
@@ -38,7 +38,7 @@ bool RevistaDAO::actualizar(const std::shared_ptr<Revista>& revista) {
     bool ok = MaterialDAO::actualizar(revista);
     if (!ok) return false;
 
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare("UPDATE Revista SET volumen = :volumen WHERE id_material = :id");
     query.bindValue(":volumen", revista->getVolumen());
     query.bindValue(":id", revista->getID());
@@ -51,13 +51,13 @@ bool RevistaDAO::actualizar(const std::shared_ptr<Revista>& revista) {
 }
 
 bool RevistaDAO::eliminar(int id) {
-    QSqlDatabase db = QSqlDatabase::database();
+    QSqlDatabase db = BaseDatos::getBD();
     if (!db.transaction()) {
         qDebug() << "No se pudo iniciar transacción en RevistaDAO::eliminar()";
         return false;
     }
 
-    QSqlQuery q1;
+    QSqlQuery q1(BaseDatos::getBD());
     q1.prepare("DELETE FROM Revista WHERE id_material = :id");
     q1.bindValue(":id", id);
     if (!q1.exec()) {
@@ -83,7 +83,7 @@ bool RevistaDAO::eliminar(int id) {
 QVector<std::shared_ptr<Revista>> RevistaDAO::obtenerRevistas() {
     QVector<std::shared_ptr<Revista>> lista;
 
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare(
         "SELECT m.id_material, m.titulo, m.autor, m.anio_publicacion, m.disponible, r.volumen "
         "FROM Material m "

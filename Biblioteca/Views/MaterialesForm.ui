@@ -2,13 +2,22 @@
 <ui version="4.0">
  <class>MaterialesForm</class>
  <widget class="QWidget" name="MaterialesForm">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>383</width>
+    <width>370</width>
     <height>325</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -200,7 +209,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>CheckBox</string>
+    <string/>
    </property>
   </widget>
  </widget>
