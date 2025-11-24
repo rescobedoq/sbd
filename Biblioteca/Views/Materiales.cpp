@@ -64,11 +64,6 @@ Materiales::~Materiales()
     delete ui;
 }
 
-void Materiales::on_agregarMateButton_3_clicked()
-{
-    // Crear una nueva ventana de detalles
-}
-
 void Materiales::on_crearMaterialButton_clicked(){
     MaterialesForm *form=new MaterialesForm(controllerMaterial, 1);
     connect(form, &MaterialesForm::materialActualizado, this, &Materiales::cargarTabla);

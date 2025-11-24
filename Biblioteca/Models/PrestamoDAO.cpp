@@ -1,4 +1,5 @@
 #include "PrestamoDAO.h"
+#include "BaseDatos.h"
 #include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
@@ -6,7 +7,7 @@
 
 // CRUD
 bool PrestamoDAO::insertarPrestamo(const std::shared_ptr<Prestamo>& prestamo){
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare("INSERT INTO Prestamo (id_prestamo, id_usuario, id_material,"
                   "fecha_prestamo, fecha_limite, devuelto) "
                   "VALUES (:id, :usuarioID, :materialID, :fechaPres, :fechaLim, 0)");
@@ -23,7 +24,7 @@ bool PrestamoDAO::insertarPrestamo(const std::shared_ptr<Prestamo>& prestamo){
     return true;
 }
 std::shared_ptr<Prestamo> PrestamoDAO::obtenerPrestamoPorId(int id){
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare(
         "SELECT id_prestamo, usuario_id, material_id,"
         "fecha_prestamo, fecha_limite, devuelto, fecha_devolucion"
@@ -52,7 +53,7 @@ std::shared_ptr<Prestamo> PrestamoDAO::obtenerPrestamoPorId(int id){
 QVector<std::shared_ptr<Prestamo>> PrestamoDAO::obtenerPrestamos(){
     QVector<std::shared_ptr<Prestamo>> lista;
 
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare(
         "SELECT id_prestamo, usuario_id, material_id,"
         "fecha_prestamo, fecha_limite, devuelto, fecha_devolucion"
@@ -84,7 +85,7 @@ QVector<std::shared_ptr<Prestamo>> PrestamoDAO::obtenerPrestamos(){
 QVector<std::shared_ptr<Prestamo>> PrestamoDAO::obtenerPrestamosPendientes(){
     QVector<std::shared_ptr<Prestamo>> lista;
 
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare(
         "SELECT id_prestamo, usuario_id, material_id,"
         "fecha_prestamo, fecha_limite, devuelto, fecha_devolucion"
@@ -115,7 +116,7 @@ QVector<std::shared_ptr<Prestamo>> PrestamoDAO::obtenerPrestamosPendientes(){
 QVector<std::shared_ptr<Prestamo>> PrestamoDAO::obtenerPrestamosVencidos(){
     QVector<std::shared_ptr<Prestamo>> lista;
 
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare(
         "SELECT id_prestamo, usuario_id, material_id,"
         "fecha_prestamo, fecha_limite, devuelto, fecha_devolucion"
@@ -146,7 +147,7 @@ QVector<std::shared_ptr<Prestamo>> PrestamoDAO::obtenerPrestamosVencidos(){
 
 // Registrar devolución
 bool PrestamoDAO::registrarDevolucion(int prestamoId, const QDate& fechaDevolucion) {
-    QSqlQuery query;
+    QSqlQuery query(BaseDatos::getBD());
     query.prepare("UPDATE Prestamo SET devuelto = 1, fecha_devolucion = :fecha WHERE id_prestamo = :id");
     query.bindValue(":id", prestamoId);
     query.bindValue(":fecha", fechaDevolucion.toString("yyyy-MM-dd"));

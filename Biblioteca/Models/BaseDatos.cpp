@@ -14,6 +14,9 @@ bool BaseDatos::conectar(const QString& rutaBD) {
         return false;
     }
 
+    QSqlQuery q(bd);
+    q.exec("PRAGMA foreign_keys = ON;");
+
     qDebug() << "Conexión a SQLite exitosa.";
     return true;
 }
