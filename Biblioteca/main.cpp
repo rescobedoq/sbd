@@ -61,6 +61,8 @@ int main(int argc, char *argv[])
     u.show();
     Materiales m(&controllerMateriales);
     m.show();
+    Prestamos p(&controllerPrestamo);
+    p.show();
 
     return a.exec();
 }
