@@ -5,7 +5,7 @@
 class PrestamoDAO {
 public:
     // CRUD
-    bool insertarPrestamo(const std::shared_ptr<Prestamo>& prestamo);
+    bool insertarPrestamo(const std::shared_ptr<Prestamo>& prestamo, int& idGenerado);
     std::shared_ptr<Prestamo> obtenerPrestamoPorId(int id);
     QVector<std::shared_ptr<Prestamo>> obtenerPrestamos();
 

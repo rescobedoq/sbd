@@ -6,9 +6,11 @@
 #include "Models/BaseDatos.h"
 #include "Views/Materiales.h"
 #include "Views/Usuarios.h"
+#include "Views/Prestamos.h"
 #include "Controllers/MaterialController.h"
 #include "Models/LibroDAO.h"
 #include "Controllers/UsuarioController.h"
+#include "Controllers/PrestamoController.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +23,7 @@ int main(int argc, char *argv[])
 
     UsuarioController controllerUsuario;
     MaterialController controllerMateriales;
+    PrestamoController controllerPrestamo(controllerMateriales);
     LibroDAO libroDAO;
     RevistaDAO revistaDAO;
     TesisDAO tesisDAO;
@@ -51,12 +54,14 @@ int main(int argc, char *argv[])
 
     controllerUsuario.cargarUsuarios();
     controllerMateriales.cargarMateriales();
+    controllerPrestamo.cargarPrestamos();
 
     // Mostrando ventana de materiales
     Usuarios u(&controllerUsuario);
     u.show();
     Materiales m(&controllerMateriales);
     m.show();
+
     return a.exec();
 }
 

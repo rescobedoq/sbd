@@ -5,19 +5,21 @@
 #include <QDate>
 #include <memory>
 #include "../Models/Prestamo.h"
-
+#include "MaterialController.h"
 #include "../Models/PrestamoDAO.h"
 
 class PrestamoController
 {
 private:
+    MaterialController& materialController;
     PrestamoDAO dao;   // Usa el DAO real
+    QVector<std::shared_ptr<Prestamo>> prestamos;
 
 public:
-    PrestamoController();
-
+    PrestamoController(MaterialController& materialController);
+    bool cargarPrestamos();
     // Crear un préstamo
-    bool crearPrestamo(const std::shared_ptr<Prestamo>& prestamo);
+    bool crearPrestamo(int usuarioID, int materialID, QDate& fechaPrestamo,QDate& fechaLimite);
 
     // Registrar devolución
     bool registrarDevolucion(int prestamoId, const QDate& fechaDev);
@@ -26,6 +28,7 @@ public:
     QList<std::shared_ptr<Prestamo>> obtenerPrestamosActivos();
     QList<std::shared_ptr<Prestamo>> obtenerPrestamosVencidos();
     QList<std::shared_ptr<Prestamo>> obtenerHistorialUsuario(int usuarioId);
+    QVector<std::shared_ptr<Prestamo>>& obtenerPrestamos();
 };
 
 #endif // PRESTAMOCONTROLLER_H

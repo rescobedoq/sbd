@@ -121,3 +121,13 @@ bool MaterialController::eliminarMaterial(int id) {
     }
     return false;
 }
+bool MaterialController::cambiarDisponibilidad(int id, bool disponible) {
+    for (auto& material : materiales) {
+        if (material->getID() == id) {
+            materialDAO.actualizarDisponibilidad(id, disponible);
+            material->setDisponible(disponible);
+            return true;
+        }
+    }
+    return false;
+}

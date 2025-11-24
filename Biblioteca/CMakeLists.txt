@@ -49,6 +49,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Models/Prestamo.h Models/Prestamo.cpp
         Models/PrestamoDAO.h Models/PrestamoDAO.cpp
         Controllers/PrestamoController.h Controllers/PrestamoController.cpp
+        Views/Prestamos.h Views/Prestamos.cpp Views/Prestamos.ui
+        Views/PrestamoForm.h Views/PrestamoForm.cpp Views/PrestamoForm.ui
 
 
 
