@@ -35,9 +35,6 @@ std::shared_ptr<Material> MaterialController::crearMaterial(
 
     std::shared_ptr<Material> material(raw);
 
-    int nuevoID = materiales.size() + 1;
-
-    material->setID(nuevoID);
     material->setTitulo(titulo);
     material->setAutor(autor);
     material->setAnio(anio);

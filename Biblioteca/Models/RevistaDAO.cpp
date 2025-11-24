@@ -8,7 +8,6 @@ bool RevistaDAO::insertar(const std::shared_ptr<Revista>& revista) {
         qDebug() << "No se pudo iniciar transacción en RevistaDAO::insertar()";
         return false;
     }
-
     int idGenerado;
     if (!insertarEnMaterial(revista, idGenerado)) {
         db.rollback();

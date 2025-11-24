@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QDebug>
+#include <iostream>
 #include "Models/Prestamo.h"
 #include "Models/PrestamoDAO.h"
 #include "Models/BaseDatos.h"

@@ -8,7 +8,6 @@ bool TesisDAO::insertar(const std::shared_ptr<Tesis>& tesis) {
         qDebug() << "No se pudo iniciar transacción en TesisDAO::insertar()";
         return false;
     }
-
     int idGenerado;
     if (!insertarEnMaterial(tesis, idGenerado)) {
         db.rollback();

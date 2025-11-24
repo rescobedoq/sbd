@@ -22,6 +22,7 @@ bool MaterialDAO::insertarEnMaterial(const std::shared_ptr<Material>& m, int& id
     }
 
     idGenerado = query.lastInsertId().toInt();
+    m->setID(idGenerado);
     return true;
 }
 
