@@ -15,7 +15,12 @@ private:
     bool devuelto;
 
 public:
+    // Constructor para el caché
     Prestamo(int id, int usuarioId, int materialId, const QString& nombreUsuario,
+             const QString& nombreMaterial, const QDate& fechaPrestamo, const QDate& fechaLimite,
+             bool devuelto = false, const QDate& fechaDev = QDate());
+    // Constructor para el DAO
+    Prestamo(int usuarioId, int materialId, const QString& nombreUsuario,
              const QString& nombreMaterial, const QDate& fechaPrestamo, const QDate& fechaLimite,
              bool devuelto = false, const QDate& fechaDev = QDate());
 

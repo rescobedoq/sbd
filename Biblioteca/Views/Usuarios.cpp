@@ -24,7 +24,7 @@ Usuarios::Usuarios(UsuarioController* controller, QWidget *parent)
 }
 
 void Usuarios::cargarTabla() {
-    QVector<std::shared_ptr<Usuario>>& usuariosRef = controllerUsuario->obtenerUsuarios();
+    QVector<std::shared_ptr<Usuario>> usuariosRef = controllerUsuario->obtenerUsuarios();
 
     // Configura la tabla
     ui->tblUsuarios->setColumnCount(2);

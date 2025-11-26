@@ -7,6 +7,13 @@ Prestamo::Prestamo(int id, int usuarioId, int materialId, const QString& nombreU
       nombreMaterial(nombreMaterial), nombreUsuario(nombreUsuario),
       fechaLimiteDevolucion(fechaLimite),  devuelto(devuelto), fechaDevolucion(fechaDev) {}
 
+Prestamo::Prestamo(int usuarioId, int materialId, const QString& nombreUsuario,
+                   const QString& nombreMaterial, const QDate& fechaPrestamo, const QDate& fechaLimite,
+                   bool devuelto, const QDate& fechaDev)
+    : usuarioId(usuarioId), materialId(materialId), fechaPrestamo(fechaPrestamo),
+      nombreMaterial(nombreMaterial), nombreUsuario(nombreUsuario),
+      fechaLimiteDevolucion(fechaLimite),  devuelto(devuelto), fechaDevolucion(fechaDev) {}
+
 // Getters
 int Prestamo::getId() const{
     return id;
@@ -36,7 +43,7 @@ bool Prestamo::estaDevuelto() const {
     return devuelto;
 }
 
-// Setters (solo para devolución)
+// Setters
 void Prestamo::setID(int id){
     this->id = id;
 }
