@@ -22,7 +22,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QComboBox" name="comboBox"/>
+    <widget class="QComboBox" name="cmbUsuarios"/>
    </item>
    <item>
     <widget class="QLabel" name="label_2">
@@ -32,7 +32,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QComboBox" name="comboBox_2"/>
+    <widget class="QComboBox" name="cmbMateriales"/>
    </item>
    <item>
     <widget class="QLabel" name="label_3">
@@ -42,7 +42,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QDateEdit" name="dateEdit"/>
+    <widget class="QDateEdit" name="dteFechaPrestamo"/>
    </item>
    <item>
     <widget class="QLabel" name="label_4">
@@ -52,7 +52,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QDateEdit" name="dateEdit_2"/>
+    <widget class="QDateEdit" name="dteFechaLimite"/>
    </item>
    <item>
     <spacer name="verticalSpacer">

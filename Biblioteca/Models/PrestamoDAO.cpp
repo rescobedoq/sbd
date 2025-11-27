@@ -8,10 +8,9 @@
 // CRUD
 bool PrestamoDAO::insertarPrestamo(const std::shared_ptr<Prestamo>& prestamo, int& idGenerado){
     QSqlQuery query(BaseDatos::getBD());
-    query.prepare("INSERT INTO Prestamo (id_prestamo, id_usuario, id_material,"
+    query.prepare("INSERT INTO Prestamo (id_usuario, id_material,"
                   "fecha_prestamo, fecha_limite, devuelto) "
-                  "VALUES (:id, :usuarioID, :materialID, :fechaPres, :fechaLim, 0)");
-    query.bindValue(":id", prestamo->getId());
+                  "VALUES (:usuarioID, :materialID, :fechaPres, :fechaLim, 0)");
     query.bindValue(":usuarioID", prestamo->getUsuarioId());
     query.bindValue(":materialID", prestamo->getMaterialId());
     query.bindValue(":fechaPres", prestamo->getFechaPrestamo());
@@ -22,7 +21,6 @@ bool PrestamoDAO::insertarPrestamo(const std::shared_ptr<Prestamo>& prestamo, in
         return false;
     }
     idGenerado = query.lastInsertId().toInt();
-    prestamo->setID(idGenerado);
     return true;
 }
 std::shared_ptr<Prestamo> PrestamoDAO::obtenerPrestamoPorId(int id){

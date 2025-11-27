@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "../Controllers/PrestamoController.h"
+#include "../Controllers/UsuarioController.h"
 
 namespace Ui {
 class Prestamos;
@@ -13,12 +14,14 @@ class Prestamos : public QWidget
     Q_OBJECT
 
 public:
-    explicit Prestamos(PrestamoController* controller, QWidget *parent = nullptr);
+    explicit Prestamos(PrestamoController& controller, UsuarioController& usuarioCtrl, MaterialController& materialCtrl, QWidget *parent = nullptr);
     void cargarTabla();
     ~Prestamos();
 
 private:
-    PrestamoController* controllerPrestamo;
+    UsuarioController& controllerUsuario;
+    MaterialController& controllerMaterial;
+    PrestamoController& controllerPrestamo;
     Ui::Prestamos *ui;
 
 private slots:

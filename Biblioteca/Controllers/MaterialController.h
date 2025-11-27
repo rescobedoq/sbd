@@ -19,7 +19,7 @@ public:
     void cargarMateriales();
 
     // READ - devolver copia
-    QVector<std::shared_ptr<Material>> listarMateriales();
+    QVector<std::shared_ptr<Material>>& listarMateriales();
 
     // CREATE – usando FACTORY
     std::shared_ptr<Material> crearMaterial(

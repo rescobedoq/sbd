@@ -19,7 +19,8 @@ public:
     PrestamoController(MaterialController& materialController);
     bool cargarPrestamos();
     // Crear un préstamo
-    bool crearPrestamo(int usuarioID, int materialID, QDate& fechaPrestamo,QDate& fechaLimite);
+    bool crearPrestamo(int usuarioID, int materialID, const QString& nomUsuario, const QString& nomMaterial,
+                       const QDate& fechaPrestamo, const QDate& fechaLimite);
 
     // Registrar devolución
     bool registrarDevolucion(int prestamoId, const QDate& fechaDev);

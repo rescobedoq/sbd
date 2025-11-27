@@ -60,7 +60,7 @@ std::shared_ptr<Material> MaterialController::crearMaterial(
     return material;
 }
 
-QVector<std::shared_ptr<Material>> MaterialController::listarMateriales() {
+QVector<std::shared_ptr<Material>>& MaterialController::listarMateriales() {
     return materiales;
 }
 
