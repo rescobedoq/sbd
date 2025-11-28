@@ -7,16 +7,17 @@
 #include "../Models/Prestamo.h"
 #include "MaterialController.h"
 #include "../Models/PrestamoDAO.h"
+#include "../Models/Repositorio.h"
 
 class PrestamoController
 {
 private:
-    MaterialController& materialController;
     PrestamoDAO dao;   // Usa el DAO real
-    QVector<std::shared_ptr<Prestamo>> prestamos;
+    Repositorio<Prestamo> repositorio;
+    bool cacheInicializada = false;
 
 public:
-    PrestamoController(MaterialController& materialController);
+    PrestamoController();
     bool cargarPrestamos();
     // Crear un préstamo
     bool crearPrestamo(int usuarioID, int materialID, const QString& nomUsuario, const QString& nomMaterial,
@@ -29,7 +30,11 @@ public:
     QList<std::shared_ptr<Prestamo>> obtenerPrestamosActivos();
     QList<std::shared_ptr<Prestamo>> obtenerPrestamosVencidos();
     QList<std::shared_ptr<Prestamo>> obtenerHistorialUsuario(int usuarioId);
-    QVector<std::shared_ptr<Prestamo>>& obtenerPrestamos();
+    QVector<std::shared_ptr<Prestamo>> obtenerPrestamos();
+    QVector<std::shared_ptr<Prestamo>> obtenerPrestamosActivosPorUsuario(int usuarioId);
+    QVector<std::shared_ptr<Prestamo>> obtenerPrestamosActivosPorMaterial(int materialId);
+    std::shared_ptr<Prestamo> obtenerPrestamoPorID(int id);
+    std::shared_ptr<Prestamo> obtenerPrestamoPorIndice(const int& indice);
 };
 
 #endif // PRESTAMOCONTROLLER_H

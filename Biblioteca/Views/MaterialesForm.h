@@ -13,7 +13,7 @@ class MaterialesForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit MaterialesForm(MaterialController* controller, int tipo, std::shared_ptr<Material> m=nullptr,QWidget *parent=nullptr);
+    explicit MaterialesForm(int tipo, std::shared_ptr<Material> m=nullptr,QWidget *parent=nullptr);
     ~MaterialesForm();
 
 private slots:
@@ -24,8 +24,6 @@ signals:
     void materialActualizado();
 
 private:
-
-    MaterialController* controllerMaterial;
     int tipoVentana;
     std::shared_ptr<Material> material;
     Ui::MaterialesForm *ui;

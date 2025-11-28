@@ -9,6 +9,7 @@
 #include "Views/Prestamos.h"
 #include "Controllers/MaterialController.h"
 #include "Models/LibroDAO.h"
+#include "Controllers/BibliotecaFacade.h"
 #include "Controllers/UsuarioController.h"
 #include "Controllers/PrestamoController.h"
 
@@ -21,9 +22,11 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    UsuarioController controllerUsuario;
-    MaterialController controllerMateriales;
-    PrestamoController controllerPrestamo(controllerMateriales);
+    auto usuarioController = std::make_shared<UsuarioController>();
+    auto materialController = std::make_shared<MaterialController>();
+    auto prestamoController = std::make_shared<PrestamoController>();
+
+    BibliotecaFacade::inicializar(usuarioController, materialController, prestamoController);
     LibroDAO libroDAO;
     RevistaDAO revistaDAO;
     TesisDAO tesisDAO;
@@ -52,17 +55,17 @@ int main(int argc, char *argv[])
     prestamoDAO.insertarPrestamo(prestamo);
     prestamoDAO.registrarDevolucion(1, hoy);*/
 
-    controllerUsuario.cargarUsuarios();
-    controllerMateriales.cargarMateriales();
-    controllerPrestamo.cargarPrestamos();
+    usuarioController->cargarUsuarios();
+    materialController->cargarMateriales();
+    prestamoController->cargarPrestamos();
 
     // Mostrando ventana de materiales
-    Usuarios u(&controllerUsuario);
-    u.show();
-    Materiales m(&controllerMateriales);
-    m.show();
-    Prestamos p(controllerPrestamo, controllerUsuario, controllerMateriales);
-    p.show();
+    Usuarios *u = new Usuarios();
+    u->show();
+    Materiales *m = new Materiales();
+    m->show();
+    Prestamos *p = new Prestamos();
+    p->show();
 
     return a.exec();
 }

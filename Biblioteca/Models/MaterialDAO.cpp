@@ -33,7 +33,7 @@ bool MaterialDAO::actualizarEnMaterial(const std::shared_ptr<Material>& m) {
         "anio_publicacion = :anio, disponible = :disponible "
         "WHERE id_material = :id"
         );
-    query.bindValue(":id", m->getID());
+    query.bindValue(":id", m->getId());
     query.bindValue(":titulo", m->getTitulo());
     query.bindValue(":autor", m->getAutor());
     query.bindValue(":anio", m->getAnio());
@@ -87,6 +87,7 @@ QVector<std::shared_ptr<Material>> MaterialDAO::obtenerTodos() {
         "LEFT JOIN Libro l ON m.id_material = l.id_material "
         "LEFT JOIN Revista r ON m.id_material = r.id_material "
         "LEFT JOIN Tesis t ON m.id_material = t.id_material"
+        "WHERE activo = 1"
         );
 
     if (!query.exec()) {
@@ -112,7 +113,7 @@ std::shared_ptr<Material> MaterialDAO::buscarMaterialPorId(int id) {
         "LEFT JOIN Libro l ON m.id_material = l.id_material "
         "LEFT JOIN Revista r ON m.id_material = r.id_material "
         "LEFT JOIN Tesis t ON m.id_material = t.id_material "
-        "WHERE m.id_material = :id"
+        "WHERE m.id_material = :id AND m.activo = 1"
         );
     query.bindValue(":id", id);
 
@@ -150,21 +151,21 @@ bool MaterialDAO::actualizar(const std::shared_ptr<Material>& m) {
     if (tipo == "Libro") {
         auto libro = std::dynamic_pointer_cast<Libro>(m);
         query.prepare("UPDATE Libro SET genero = :genero WHERE id_material = :id");
-        query.bindValue(":id", libro->getID());
+        query.bindValue(":id", libro->getId());
         query.bindValue(":genero", libro->getGenero());
         exitoHija = query.exec();
     }
     else if (tipo == "Revista") {
         auto revista = std::dynamic_pointer_cast<Revista>(m);
         query.prepare("UPDATE Revista SET volumen = :volumen WHERE id_material = :id");
-        query.bindValue(":id", revista->getID());
+        query.bindValue(":id", revista->getId());
         query.bindValue(":volumen", revista->getVolumen());
         exitoHija = query.exec();
     }
     else if (tipo == "Tesis") {
         auto tesis = std::dynamic_pointer_cast<Tesis>(m);
         query.prepare("UPDATE Tesis SET universidad = :universidad WHERE id_material = :id");
-        query.bindValue(":id", tesis->getID());
+        query.bindValue(":id", tesis->getId());
         query.bindValue(":universidad", tesis->getUniversidad());
         exitoHija = query.exec();
     }
@@ -186,19 +187,8 @@ bool MaterialDAO::actualizar(const std::shared_ptr<Material>& m) {
 
 bool MaterialDAO::eliminar(int id) {
     QSqlDatabase db = BaseDatos::getBD();
-
-    // Eliminar de tablas hijas (por foreign key cascade o manualmente)
-    // Si tienes ON DELETE CASCADE configurado, solo necesitas eliminar de Material
-    QSqlQuery check(BaseDatos::getBD());
-    check.exec("PRAGMA foreign_key_check;");
-    while (check.next()) {
-        qDebug() << "FK FAIL -> Tabla:" << check.value(0).toString()
-        << "Fila:" << check.value(1).toInt()
-        << "ID:" << check.value(2).toString()
-        << "FK Info:" << check.value(3).toString();
-    }
     QSqlQuery query(BaseDatos::getBD());
-    query.prepare("DELETE FROM Material WHERE id_material = :id");
+    query.prepare("UPDATE Material SET activo = 0 WHERE id_material = :id");
     query.bindValue(":id", id);
 
     if (!query.exec()) {

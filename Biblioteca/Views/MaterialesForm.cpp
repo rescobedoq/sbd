@@ -4,9 +4,10 @@
 #include "../Models/Revista.h"
 #include "../Models/Tesis.h"
 #include <QMessageBox>
+#include "../Controllers/BibliotecaFacade.h"
 
-MaterialesForm::MaterialesForm(MaterialController* controller, int tipo, std::shared_ptr<Material> m, QWidget *parent) :
-    QWidget(parent), controllerMaterial(controller), tipoVentana(tipo), material(m),
+MaterialesForm::MaterialesForm(int tipo, std::shared_ptr<Material> m, QWidget *parent) :
+    QWidget(parent), tipoVentana(tipo), material(m),
     ui(new Ui::MaterialesForm)
 {
     ui->setupUi(this);
@@ -70,7 +71,7 @@ MaterialesForm::MaterialesForm(MaterialController* controller, int tipo, std::sh
         ui->accionMaterialButton->setText("Guardar");
 
         if (material) {
-            ui->txtIDMaterial->setText(QString::number(material->getID()));
+            ui->txtIDMaterial->setText(QString::number(material->getId()));
             ui->txtTituloMaterial->setText(material->getTitulo());
             ui->txtAutorMaterial->setText(material->getAutor());
             ui->txtAnioMaterial->setText(QString::number(material->getAnio()));
@@ -115,6 +116,7 @@ MaterialesForm::~MaterialesForm()
 
 void MaterialesForm::on_accionMaterialButton_clicked()
 {
+    auto facade = BibliotecaFacade::obtenerInstancia();
     QString titulo = ui->txtTituloMaterial->text().trimmed();
     QString autor = ui->txtAutorMaterial->text().trimmed();
     QString anioStr = ui->txtAnioMaterial->text().trimmed();
@@ -148,8 +150,7 @@ void MaterialesForm::on_accionMaterialButton_clicked()
         // Crear nuevo material
         // Convertir índice del combo a tipo numérico: 0=Libro(1), 1=Revista(2), 2=Tesis(3)
         int tipoNum = tipoIndex + 1;
-
-        if (controllerMaterial->crearMaterial(tipoNum, titulo, autor, anio, extra, disponible)) {
+        if (facade->materiales()->crearMaterial(tipoNum, titulo, autor, anio, extra, disponible)) {
             QMessageBox::information(this, "Éxito", "Material creado correctamente");
             emit materialActualizado();
             close();
@@ -160,8 +161,8 @@ void MaterialesForm::on_accionMaterialButton_clicked()
     else if (tipoVentana == 2) {
         // Actualizar material existente
         if (material) {
-            bool exito = controllerMaterial->actualizarMaterial(
-                material->getID(), titulo, autor, anio, extra, disponible
+            bool exito = facade->materiales()->actualizarMaterial(
+                material->getId(), titulo, autor, anio, extra, disponible
                 );
 
             if (exito) {

@@ -1,9 +1,10 @@
 #include "UsuarioForm.h"
 #include "ui_UsuarioForm.h"
 #include <QMessageBox>
-// int tipo, std::shared_ptr<Usuario> u, QWidget *parent = nullptr
-UsuarioForm::UsuarioForm(UsuarioController* controller, int tipo, std::shared_ptr<Usuario> u, QWidget *parent) :
-    QWidget(parent), controllerUsuario(controller), tipoVentana(tipo), usuario(u),
+#include "../Controllers/BibliotecaFacade.h"
+
+UsuarioForm::UsuarioForm(int tipo, std::shared_ptr<Usuario> u, QWidget *parent) :
+    QWidget(parent), tipoVentana(tipo), usuario(u),
     ui(new Ui::UsuarioForm)
 {
     ui->setupUi(this);
@@ -27,6 +28,7 @@ UsuarioForm::~UsuarioForm()
 }
 
 void UsuarioForm::on_btnAccionUsuario_clicked(){
+    auto facade = BibliotecaFacade::obtenerInstancia();
     QString nombre = ui->txtNombreUsuario->text();
     int id = ui->txtIDUsuario->text().toInt();
     if (ui->txtIDUsuario->text().trimmed().isEmpty()) {
@@ -41,14 +43,14 @@ void UsuarioForm::on_btnAccionUsuario_clicked(){
         return;
     }
     if (tipoVentana == 1) {
-        if(controllerUsuario->agregarUsuario(id, nombre)){
+        if(facade->usuarios()->agregarUsuario(id, nombre)){
             QMessageBox::information(this, "Usuario creado", "El usuario se agregó correctamente.");
         } else {
             QMessageBox::warning(this, "Error al crear", "No se pudo crear nuevo usuario");
         }
 
     } else if (tipoVentana == 2) {
-        if(controllerUsuario->actualizarUsuario(id, nombre)){
+        if(facade->usuarios()->actualizarUsuario(id, nombre)){
             QMessageBox::information(this, "Usuario Actualizado", "El usuario se actualizo correctamente.");
         } else {
             QMessageBox::warning(this, "Error al actualizar", "No se pudo actualizar el usuario");

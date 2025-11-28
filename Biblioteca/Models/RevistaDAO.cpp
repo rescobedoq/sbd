@@ -41,7 +41,7 @@ bool RevistaDAO::actualizar(const std::shared_ptr<Revista>& revista) {
     QSqlQuery query(BaseDatos::getBD());
     query.prepare("UPDATE Revista SET volumen = :volumen WHERE id_material = :id");
     query.bindValue(":volumen", revista->getVolumen());
-    query.bindValue(":id", revista->getID());
+    query.bindValue(":id", revista->getId());
 
     if (!query.exec()) {
         qDebug() << "Error SQL en RevistaDAO::actualizar():" << query.lastError().text();
