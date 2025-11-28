@@ -1,19 +1,22 @@
 #include "PrestamoForm.h"
 #include "ui_PrestamoForm.h"
 #include <QMessageBox>
+#include "../Controllers/BibliotecaFacade.h"
 
-PrestamoForm::PrestamoForm(PrestamoController& controller, UsuarioController& usuarioCtrl, MaterialController& materialCtrl, QWidget *parent) :
-    QDialog(parent), controllerPrestamo(controller), controllerUsuario(usuarioCtrl), controllerMaterial(materialCtrl),
+PrestamoForm::PrestamoForm(QWidget *parent) :
+    QDialog(parent),
     ui(new Ui::PrestamoForm)
 {
     ui->setupUi(this);
-    QVector<std::shared_ptr<Usuario>> usuariosRef = controllerUsuario.obtenerUsuarios();
-    QVector<std::shared_ptr<Material>> materialesRef = controllerMaterial.listarMateriales();
+    auto facade = BibliotecaFacade::obtenerInstancia();
+
+    auto usuariosRef = facade->usuarios()->obtenerUsuarios();
+    auto materialesRef = facade->materiales()->obtenerMaterialesDisponibles();
     for (const auto& u : usuariosRef) {
-        ui->cmbUsuarios->addItem(u->getNombre());
+        ui->cmbUsuarios->addItem(u->getNombre(), u->getId());
     }
     for (const auto& m : materialesRef) {
-        ui->cmbMateriales->addItem(m->getTitulo());
+        ui->cmbMateriales->addItem(m->getTitulo(), m->getId());
     }
     QDate hoy = QDate::currentDate();
     ui->dteFechaPrestamo->setDate(hoy);
@@ -32,23 +35,36 @@ PrestamoForm::~PrestamoForm()
 void PrestamoForm::on_btnRegistrarPrestamo_clicked(){
     int indiceU = ui->cmbUsuarios->currentIndex();
     int indiceM = ui->cmbMateriales->currentIndex();
-    if (indiceU < 0 || indiceM < 0) return; // nada seleccionado
-    std::shared_ptr<Usuario> usuarioSeleccionado = controllerUsuario.obtenerUsuarios()[indiceU];
-    std::shared_ptr<Material> materialSeleccionado = controllerMaterial.listarMateriales()[indiceM];
+
+    if (indiceU < 0 || indiceM < 0){
+        QMessageBox::warning(this, "Advertencia", "Por favor selecciona un usuario y un material");
+        return;
+    }
+    int usuarioId = ui->cmbUsuarios->currentData().toInt();
+    int materialId = ui->cmbMateriales->currentData().toInt();
+    QString nombreUsuario = ui->cmbUsuarios->currentText();
+    QString nombreMaterial = ui->cmbMateriales->currentText();
     QDate fechaPrestamo = ui->dteFechaPrestamo->date();
     QDate fechaLimite = ui->dteFechaLimite->date();
-    if(controllerPrestamo.crearPrestamo(usuarioSeleccionado->getId(),
-                                        materialSeleccionado->getID(),
-                                        usuarioSeleccionado->getNombre(),
-                                        materialSeleccionado->getTitulo(),
-                                        fechaPrestamo, fechaLimite))
-    {
-        qDebug() << "Creado correctamente.";
-        QMessageBox::information(this, "Prestamo creado", "El prestamo se creo correctamente.");
+
+    auto facade = BibliotecaFacade::obtenerInstancia();
+    auto resultado = facade->realizarPrestamo(usuarioId, materialId, nombreUsuario, nombreMaterial,
+                                              fechaPrestamo, fechaLimite);
+
+    if (resultado.exito) {
+        QMessageBox::information(this, "Éxito", resultado.mensaje);
+        // Para filtros
+        /*QString filtro = ui->txtBuscarNombre->text().trimmed();
+        if (filtro.isEmpty()) {
+            cargarTabla(facade->prestamos()->obtenerPrestamos());
+        } else {
+            cargarTabla(facade->prestamos()->buscarUsuario(filtro));
+        }*/
         emit prestamoCreado();
         close();
     } else {
-        QMessageBox::warning(this, "Error al crear", "No se pudo crear el usuario");
+        QString mensaje = resultado.mensaje + "\n\n";
+        QMessageBox::warning(this, "No se puede registrar el prestamos", mensaje);
     }
 }
 

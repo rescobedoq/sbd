@@ -2,8 +2,7 @@
 #define PRESTAMOS_H
 
 #include <QWidget>
-#include "../Controllers/PrestamoController.h"
-#include "../Controllers/UsuarioController.h"
+#include "../Models/Prestamo.h"
 
 namespace Ui {
 class Prestamos;
@@ -14,14 +13,11 @@ class Prestamos : public QWidget
     Q_OBJECT
 
 public:
-    explicit Prestamos(PrestamoController& controller, UsuarioController& usuarioCtrl, MaterialController& materialCtrl, QWidget *parent = nullptr);
-    void cargarTabla();
+    explicit Prestamos(QWidget *parent = nullptr);
+    void cargarTabla(const QVector<std::shared_ptr<Prestamo>>& usuarios);
     ~Prestamos();
 
 private:
-    UsuarioController& controllerUsuario;
-    MaterialController& controllerMaterial;
-    PrestamoController& controllerPrestamo;
     Ui::Prestamos *ui;
 
 private slots:

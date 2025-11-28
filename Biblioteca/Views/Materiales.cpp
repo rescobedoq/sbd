@@ -6,64 +6,59 @@
 #include <QJsonObject>
 #include <QVector>
 #include <QMessageBox>
-#include "../Models/material.h"
 #include "MaterialesForm.h"
+#include "../Controllers/BibliotecaFacade.h"
 
-/*
- * Modificar interfaz y agregar pantallas para incluir:
- * crear material
- * detalles del material seleccionado
- * modificar material seleccionado
- * eliminar material seleccionado
-*/
-
-Materiales::Materiales(MaterialController* controller, QWidget *parent) :
-    QWidget(parent), controllerMaterial(controller),
+Materiales::Materiales(QWidget *parent) :
+    QWidget(parent),
     ui(new Ui::Materiales)
 {
     ui->setupUi(this);
-    cargarTabla();
-
-}
-void Materiales::cargarTabla(){
-    // Obtener lista de materiales desde el controlador
-    QVector<std::shared_ptr<Material>> materiales = controllerMaterial->listarMateriales();
-
+    auto facade = BibliotecaFacade::obtenerInstancia();
     // Configura la tabla
     ui->tablaMateriales->setColumnCount(6);
     ui->tablaMateriales->setHorizontalHeaderLabels(
         {"ID", "Tipo", "Título", "Autor", "Año", "Disponible"}
         );
-    ui->tablaMateriales->setRowCount(materiales.size());
 
-    // Llenar tabla
-    for (int i = 0; i < materiales.size(); ++i) {
-        std::shared_ptr<Material> m = materiales[i];
-        ui->tablaMateriales->setItem(i, 0, new QTableWidgetItem(QString::number(m->getID())));
-        ui->tablaMateriales->setItem(i, 1, new QTableWidgetItem(m->obtenerTipo()));
-        ui->tablaMateriales->setItem(i, 2, new QTableWidgetItem(m->getTitulo()));
-        ui->tablaMateriales->setItem(i, 3, new QTableWidgetItem(m->getAutor()));
-        ui->tablaMateriales->setItem(i, 4, new QTableWidgetItem(QString::number(m->getAnio())));
-        ui->tablaMateriales->setItem(i, 5, new QTableWidgetItem(m->getDisponible() ? "Sí" : "No"));
-    }
+    cargarTabla(facade->materiales()->obtenerMateriales());
 
-    // Ajustes visuales
-    ui->tablaMateriales->resizeColumnsToContents();
-    ui->tablaMateriales->resizeRowsToContents();
     ui->tablaMateriales->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     ui->tablaMateriales->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->tablaMateriales->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    layout()->activate();   // recalcula el layout
-    adjustSize();
-    resize(width() + 20, height());
 
     QHeaderView *header = ui->tablaMateriales->horizontalHeader();
 
     header->setSectionResizeMode(QHeaderView::Fixed);   // Todas fijas por defecto
     header->setSectionResizeMode(2, QHeaderView::Stretch);
     header->setSectionResizeMode(3, QHeaderView::Stretch);
+
 }
+
+void Materiales::cargarTabla(const QVector<std::shared_ptr<Material>>& materiales) {
+    ui->tablaMateriales->setRowCount(0);
+
+    for (auto &m : materiales)
+    {
+        int row = ui->tablaMateriales->rowCount();  // siguiente fila
+        ui->tablaMateriales->insertRow(row);
+
+        ui->tablaMateriales->setItem(row, 0, new QTableWidgetItem(QString::number(m->getId())));
+        ui->tablaMateriales->setItem(row, 1, new QTableWidgetItem(m->obtenerTipo()));
+        ui->tablaMateriales->setItem(row, 2, new QTableWidgetItem(m->getTitulo()));
+        ui->tablaMateriales->setItem(row, 3, new QTableWidgetItem(m->getAutor()));
+        ui->tablaMateriales->setItem(row, 4, new QTableWidgetItem(QString::number(m->getAnio())));
+        ui->tablaMateriales->setItem(row, 5, new QTableWidgetItem(m->getDisponible() ? "Sí" : "No"));
+    }
+    ui->tablaMateriales->resizeColumnsToContents();
+    ui->tablaMateriales->resizeRowsToContents();
+
+    // Ajustar layout y ventana al nuevo contenido
+    layout()->activate();
+    adjustSize();
+    resize(width() + 20, height());
+}
+
 
 Materiales::~Materiales()
 {
@@ -71,11 +66,18 @@ Materiales::~Materiales()
 }
 
 void Materiales::on_crearMaterialButton_clicked(){
-    MaterialesForm *form=new MaterialesForm(controllerMaterial, 1);
-    connect(form, &MaterialesForm::materialActualizado, this, &Materiales::cargarTabla);
+    MaterialesForm *form=new MaterialesForm(1);
+    connect(form, &MaterialesForm::materialActualizado, this, [this]() {
+        //Si es que se aplican filtros
+        //ui->txtBuscarNombre->clear();
+        auto facade = BibliotecaFacade::obtenerInstancia();
+        cargarTabla(facade->materiales()->obtenerMateriales());
+    });
     form->show();
 }
+
 void Materiales::on_editarMaterialButton_clicked(){
+    auto facade = BibliotecaFacade::obtenerInstancia();
     int row = ui->tablaMateriales->currentRow();
 
     if (row < 0) {
@@ -83,13 +85,15 @@ void Materiales::on_editarMaterialButton_clicked(){
         return;
     }
 
-    QVector<std::shared_ptr<Material>> materiales = controllerMaterial->listarMateriales();
-
-    if (row < materiales.size()) {
-        MaterialesForm *form = new MaterialesForm(controllerMaterial, 2, materiales[row]);
-        connect(form, &MaterialesForm::materialActualizado, this, &Materiales::cargarTabla);
-        form->show();
-    }
+    std::shared_ptr<Material> materialSeleccionado = facade->materiales()->obtenerMaterialPorIndice(row);
+    MaterialesForm *form = new MaterialesForm(2, materialSeleccionado);
+    connect(form, &MaterialesForm::materialActualizado, this, [this]() {
+        //Si es que se aplican filtros
+        //ui->txtBuscarNombre->clear();
+        auto facade = BibliotecaFacade::obtenerInstancia();
+        cargarTabla(facade->materiales()->obtenerMateriales());
+    });
+    form->show();
 }
 
 void Materiales::on_eliminarMaterialButton_clicked(){
@@ -100,27 +104,46 @@ void Materiales::on_eliminarMaterialButton_clicked(){
         return;
     }
 
-    QVector<std::shared_ptr<Material>> materiales = controllerMaterial->listarMateriales();
+    // Obtener ID de la celda
+    int id = ui->tablaMateriales->item(row, 0)->text().toInt();
+    QString nombre = ui->tablaMateriales->item(row, 1)->text();
 
-    if (row < materiales.size()) {
-        int id = materiales[row]->getID();
-        QString titulo = materiales[row]->getTitulo();
+    // Confirmación
+    QMessageBox::StandardButton respuesta = QMessageBox::question(
+        this,
+        "Confirmar eliminación",
+        QString("¿Estás seguro de eliminar el material '%1'?").arg(nombre),
+        QMessageBox::Yes | QMessageBox::No
+        );
 
-        QMessageBox::StandardButton respuesta = QMessageBox::question(
-            this,
-            "Confirmar eliminación",
-            QString("¿Estás seguro de eliminar el material '%1'?").arg(titulo),
-            QMessageBox::Yes | QMessageBox::No
-            );
+    if (respuesta != QMessageBox::Yes) {
+        return;
+    }
 
-        if (respuesta == QMessageBox::Yes) {
-            if (controllerMaterial->eliminarMaterial(id)) {
-                QMessageBox::information(this, "Éxito", "Material eliminado correctamente");
-                cargarTabla();
-            } else {
-                QMessageBox::critical(this, "Error", "No se pudo eliminar el material");
+    // Eliminar con validaciones
+    auto facade = BibliotecaFacade::obtenerInstancia();
+    auto resultado = facade->eliminarMaterial(id);
+
+    if (resultado.exito) {
+        QMessageBox::information(this, "Éxito", resultado.mensaje);
+        // Para filtros
+        /*QString filtro = ui->txtBuscarNombre->text().trimmed();
+        if (filtro.isEmpty()) {
+            cargarTabla(facade->usuarios()->obtenerUsuarios());
+        } else {
+            cargarTabla(facade->usuarios()->buscarUsuario(filtro));
+        }*/
+        cargarTabla(facade->materiales()->obtenerMateriales());
+    } else {
+        QString mensaje = resultado.mensaje + "\n\n";
+        if (!resultado.prestamosActivos.isEmpty()) {
+            mensaje += "Préstamos activos:\n";
+            for (const auto& prestamo : resultado.prestamosActivos) {
+                mensaje += "• " + prestamo + "\n";
             }
+            mensaje += "\nRegistre las devoluciones antes de eliminar.";
         }
+        QMessageBox::warning(this, "No se puede eliminar", mensaje);
     }
 }
 

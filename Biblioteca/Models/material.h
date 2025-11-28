@@ -15,7 +15,7 @@ public:
     Material(int id, QString titulo, QString autor, int anio, bool disponible);
 
     // GETTERS
-    int getID() const;
+    int getId() const;
     QString getTitulo() const;
     QString getAutor() const;
     int getAnio() const;

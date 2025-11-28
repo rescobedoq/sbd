@@ -14,13 +14,10 @@ class PrestamoForm : public QDialog
     Q_OBJECT
 
 public:
-    explicit PrestamoForm(PrestamoController& controller, UsuarioController& usuarioCtrl, MaterialController& materialCtrl, QWidget *parent = nullptr);
+    explicit PrestamoForm(QWidget *parent = nullptr);
     ~PrestamoForm();
 
 private:
-    UsuarioController& controllerUsuario;
-    MaterialController& controllerMaterial;
-    PrestamoController& controllerPrestamo;
     Ui::PrestamoForm *ui;
 
 private slots:

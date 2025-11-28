@@ -48,7 +48,7 @@ bool LibroDAO::actualizar(const std::shared_ptr<Libro>& libro) {
     QSqlQuery query(BaseDatos::getBD());
     query.prepare("UPDATE Libro SET genero = :genero WHERE id_material = :id");
     query.bindValue(":genero", libro->getGenero());
-    query.bindValue(":id", libro->getID());
+    query.bindValue(":id", libro->getId());
 
     if (!query.exec()) {
         qDebug() << "Error SQL en LibroDAO::actualizar():" << query.lastError().text();

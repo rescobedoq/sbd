@@ -30,7 +30,7 @@ bool UsuarioDAO::actualizarUsuario(const std::shared_ptr<Usuario>& usuario) {
 
 bool UsuarioDAO::eliminarUsuario(int id) {
     QSqlQuery query(BaseDatos::getBD());
-    query.prepare("DELETE FROM Usuario WHERE id_usuario = :id");
+    query.prepare("UPDATE Usuario SET activo = 0 WHERE id_usuario = :id");
     query.bindValue(":id", id);
 
     if (!query.exec()) {
@@ -44,7 +44,7 @@ QVector<std::shared_ptr<Usuario>> UsuarioDAO::obtenerUsuarios() {
     QVector<std::shared_ptr<Usuario>> lista;
 
     QSqlQuery query(BaseDatos::getBD());
-    query.prepare("SELECT id_usuario, nombre FROM Usuario");
+    query.prepare("SELECT id_usuario, nombre FROM Usuario WHERE activo = 1");
 
     if (!query.exec()) {
         qDebug() << "Error SQL en obtenerUsuarios():"
@@ -63,7 +63,7 @@ QVector<std::shared_ptr<Usuario>> UsuarioDAO::obtenerUsuarios() {
 
 std::shared_ptr<Usuario> UsuarioDAO::obtenerUsuarioPorId(int id) {
     QSqlQuery query(BaseDatos::getBD());
-    query.prepare("SELECT id_usuario, nombre FROM Usuario WHERE id_usuario = :id");
+    query.prepare("SELECT id_usuario, nombre FROM Usuario WHERE id_usuario = :id AND activo = 1");
     query.bindValue(":id", id);
 
     if (!query.exec()) {
