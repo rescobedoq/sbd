@@ -12,14 +12,14 @@
 
 Usuarios::Usuarios(QWidget *parent)
     : QWidget(parent),
-    ui(new Ui::Usuarios)
+      ui(new Ui::Usuarios)
 {
     ui->setupUi(this);
     auto facade = BibliotecaFacade::obtenerInstancia();
     ui->tblUsuarios->setColumnCount(2);
     ui->tblUsuarios->setHorizontalHeaderLabels(
         {"ID", "Nombre"}
-        );
+    );
     cargarTabla(facade->usuarios()->obtenerUsuarios());
 
     QHeaderView *header = ui->tblUsuarios->horizontalHeader();

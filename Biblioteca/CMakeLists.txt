@@ -24,7 +24,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         Models/material.h Models/material.cpp
-        Controllers/Controller.cpp
+
 
         Models/libro.h Models/libro.cpp
         Models/tesis.h Models/tesis.cpp
@@ -52,11 +52,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Views/Prestamos.h Views/Prestamos.cpp Views/Prestamos.ui
         Views/PrestamoForm.h Views/PrestamoForm.cpp Views/PrestamoForm.ui
         Models/Repositorio.h
-        Controllers/BibliotecaFacade.h Controllers/BibliotecaFacade.cpp
-
-
-
-
+        Controllers/BibliotecaFacade.h
+        Controllers/BibliotecaFacade.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Biblioteca APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

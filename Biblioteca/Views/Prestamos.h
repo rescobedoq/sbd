@@ -2,9 +2,7 @@
 #define PRESTAMOS_H
 
 #include <QWidget>
-#include "../Controllers/PrestamoController.h"
-#include "../Controllers/UsuarioController.h"
-#include "../Controllers/MaterialController.h"
+#include "../Models/Prestamo.h"
 
 namespace Ui {
 class Prestamos;
@@ -23,7 +21,6 @@ public:
     ~Prestamos();
 
 private:
-
     Ui::Prestamos *ui;
 
 private slots:

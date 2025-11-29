@@ -67,4 +67,3 @@ public:
 };
 
 #endif // BIBLIOTECAFACADE_H
-

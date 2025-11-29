@@ -101,7 +101,6 @@ std::shared_ptr<Prestamo> PrestamoController::obtenerPrestamoPorIndice(const int
     return repositorio.at(indice);
 }
 
-
 void PrestamoController::filtrarPrestamos(const QString& busqueda, int filtroEstado)
 {
     // Guardamos filtros

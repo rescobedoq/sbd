@@ -7,12 +7,12 @@
 #include <memory>
 #include "../Models/Prestamo.h"
 #include "../Models/PrestamoDAO.h"
+#include "../Models/Repositorio.h"
 
 class PrestamoController
 {
 private:
     PrestamoDAO dao;   // Usa el DAO real
-
     // cache en memoria (según la guía)        // lista completa cargada desde DAO
     Repositorio<Prestamo> prestamosFiltrados; // la vista muestra esta
 
@@ -45,7 +45,6 @@ public:
     // Búsqueda + filtros (lo que te toca implementar)
     // filtroEstado: 0 = Todos, 1 = Pendientes, 2 = Devueltos, 3 = Vencidos
     void filtrarPrestamos(const QString& busqueda, int filtroEstado);
-
 };
 
 #endif // PRESTAMOCONTROLLER_H

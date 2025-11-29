@@ -56,7 +56,6 @@ void Prestamos::buscarPrestamos() {
 void Prestamos::cargarTablaFiltrada(){
     auto facade = BibliotecaFacade::obtenerInstancia();
     const QList<std::shared_ptr<Prestamo>> prestamosFiltrados = facade->prestamos()->getPrestamosFiltrados();
-
     // Configura la tabla
     ui->tblPrestamos->setColumnCount(7);
     ui->tblPrestamos->setHorizontalHeaderLabels(
@@ -98,16 +97,12 @@ void Prestamos::cargarTablaFiltrada(){
     header->setSectionResizeMode(2, QHeaderView::Stretch);
 }
 
-// =================================================================
-// SLOT DEL FILTRO (MODIFICADO para llamar a buscarPrestamos)
-// =================================================================
 void Prestamos::on_comboBox_currentIndexChanged(int index) {
 
     Q_UNUSED(index);
     buscarPrestamos();
 }
-// DESTRUCTOR Y OTROS SLOTS (Ajustados)
-// =================================================================
+
 Prestamos::~Prestamos()
 {
     delete ui;
@@ -122,6 +117,7 @@ void Prestamos::on_btnNuevoPrestamo_clicked(){
     form->setModal(true);
     form->exec();
 }
+
 void Prestamos::on_btnRegistrarDevolucion_clicked(){
     int row = ui->tblPrestamos->currentRow();
     if (row < 0) {
@@ -138,7 +134,7 @@ void Prestamos::on_btnRegistrarDevolucion_clicked(){
         "Confirmar devolucion",
         QString("¿Estás seguro de registrar la devolucion del material '%1' prestado al usuario '%2'?").arg(nombreMaterial, nombreUsuario),
         QMessageBox::Yes | QMessageBox::No
-        );
+    );
 
     if (respuesta != QMessageBox::Yes) {
         return;

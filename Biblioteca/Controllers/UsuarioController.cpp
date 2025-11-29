@@ -65,3 +65,4 @@ std::shared_ptr<Usuario> UsuarioController::obtenerUsuarioPorID(int id) {
 std::shared_ptr<Usuario> UsuarioController::obtenerUsuarioPorIndice(const int& indice) {
     return repositorio.at(indice);
 }
+
