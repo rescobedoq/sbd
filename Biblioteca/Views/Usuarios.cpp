@@ -43,6 +43,7 @@ void Usuarios::cargarTabla(const QVector<std::shared_ptr<Usuario>>& usuarios) {
 void Usuarios::on_btnNuevoUsuario_clicked() {
     UsuarioForm *form = new UsuarioForm(1);
     connect(form, &UsuarioForm::usuarioActualizado, this, [this]() {
+        ui->txtBuscarNombre->clear();
         auto facade = BibliotecaFacade::obtenerInstancia();
         cargarTabla(facade->usuarios()->obtenerUsuarios());
     });
@@ -56,6 +57,7 @@ void Usuarios::on_btnEditarUsuario_clicked() {
     std::shared_ptr<Usuario> usuarioSeleccionado = facade->usuarios()->obtenerUsuarioPorIndice(fila);
     UsuarioForm *form = new UsuarioForm(2, usuarioSeleccionado);
     connect(form, &UsuarioForm::usuarioActualizado, this, [this]() {
+        ui->txtBuscarNombre->clear();
         auto facade = BibliotecaFacade::obtenerInstancia();
         cargarTabla(facade->usuarios()->obtenerUsuarios());
     });
@@ -92,7 +94,12 @@ void Usuarios::on_btnEliminarUsuario_clicked() {
 
     if (resultado.exito) {
         QMessageBox::information(this, "Éxito", resultado.mensaje);
-        cargarTabla(facade->usuarios()->obtenerUsuarios());
+        QString filtro = ui->txtBuscarNombre->text().trimmed();
+        if (filtro.isEmpty()) {
+            cargarTabla(facade->usuarios()->obtenerUsuarios());
+        } else {
+            cargarTabla(facade->usuarios()->buscarUsuario(filtro));
+        }
     } else {
         QString mensaje = resultado.mensaje + "\n\n";
         if (!resultado.prestamosActivos.isEmpty()) {
@@ -104,6 +111,31 @@ void Usuarios::on_btnEliminarUsuario_clicked() {
         }
         QMessageBox::warning(this, "No se puede eliminar", mensaje);
     }
+}
+
+void Usuarios::on_btnBuscarUsuario_clicked(){
+    QString texto = ui->txtBuscarNombre->text().trimmed();
+
+    if (texto.isEmpty()) {
+        QMessageBox::warning(this, "Advertencia", "Ingrese un nombre para buscar");
+        return;
+    }
+
+    auto facade = BibliotecaFacade::obtenerInstancia();
+    auto resultados = facade->usuarios()->buscarUsuario(texto);
+
+    if (resultados.isEmpty()) {
+        QMessageBox::information(this, "Sin resultados",
+                                 QString("No se encontraron usuarios con '%1'").arg(texto));
+        return;
+    }
+
+    cargarTabla(resultados);
+}
+
+void Usuarios::on_btnRecargar_clicked(){
+    auto facade = BibliotecaFacade::obtenerInstancia();
+    cargarTabla(facade->usuarios()->obtenerUsuarios());
 }
 
 Usuarios::~Usuarios() {

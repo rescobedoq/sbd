@@ -1,6 +1,5 @@
 #include "PrestamoController.h"
 #include "../Models/Prestamo.h"
-#include "MaterialController.h"
 #include <QDebug>
 
 PrestamoController::PrestamoController() {}
@@ -100,4 +99,55 @@ std::shared_ptr<Prestamo> PrestamoController::obtenerPrestamoPorID(int id) {
 
 std::shared_ptr<Prestamo> PrestamoController::obtenerPrestamoPorIndice(const int& indice) {
     return repositorio.at(indice);
+}
+
+void PrestamoController::filtrarPrestamos(const QString& busqueda, int filtroEstado)
+{
+    // Guardamos filtros
+    QString busquedaActual = busqueda;
+    int estadoActual = filtroEstado;
+    prestamosFiltrados.limpiar();
+
+    QVector<std::shared_ptr<Prestamo>> filtrados;
+    // Limpiamos lista filtrada
+
+    // Usamos la función genérica filtrar()
+    filtrados = repositorio.filtrar([&](const std::shared_ptr<Prestamo>& p) {
+        // -------------------------------
+        // 1) Filtro Búsqueda por Usuario
+        // -------------------------------
+
+        bool coincideBusqueda = false;
+
+
+        if (busqueda.trimmed().isEmpty())
+            coincideBusqueda = true;
+        else
+            coincideBusqueda = p->getNombreUsuario().toLower().contains(busqueda.toLower());
+
+
+
+        if (!coincideBusqueda)
+            return false;
+
+        // -------------------------------
+        // 2) Filtro por Estado
+        // -------------------------------
+        bool devuelto = p->estaDevuelto();
+        bool vencido  = p->estaVencido();
+
+        switch (filtroEstado)
+        {
+        case 0: return true;                     // TODOS
+        case 1: return !devuelto && !vencido;     // PENDIENTES
+        case 2: return devuelto;                  // DEVUELTOS
+        case 3: return !devuelto && vencido;      // VENCIDOS
+        default: return true;
+        }
+    });
+    prestamosFiltrados.setItems(filtrados);
+}
+const QList<std::shared_ptr<Prestamo>> PrestamoController::getPrestamosFiltrados() const {
+    // Devuelve la lista que ha sido llenada por PrestamoController::filtrarPrestamos()
+    return prestamosFiltrados.obtenerTodos();
 }
