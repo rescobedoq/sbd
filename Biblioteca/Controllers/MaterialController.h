@@ -36,7 +36,7 @@ public:
         int anio,
         const QString& extra,
         bool disponible = true  // Por defecto disponible
-    );
+        );
 
     bool actualizarMaterial(
         int id,
@@ -45,7 +45,7 @@ public:
         int anio,
         const QString& extra,
         bool disponible = true
-    );
+        );
 
     bool eliminarMaterial(int id);
 
@@ -54,6 +54,11 @@ public:
     QVector<std::shared_ptr<Material>> obtenerMaterialesDisponibles();
     std::shared_ptr<Material> obtenerMaterialPorID(int id);
     std::shared_ptr<Material> obtenerMaterialPorIndice(const int& indice);
+
+    // NUEVOS MÉTODOS - Agregar estos
+    QVector<std::shared_ptr<Material>> buscarMaterialPorNombre(const QString& nombre);
+    QVector<std::shared_ptr<Material>> filtrarPorDisponibilidad(bool disponible);
+    QVector<std::shared_ptr<Material>> buscarYFiltrar(const QString& nombre, int filtroDisponibilidad);
 };
 
 #endif // MATERIALCONTROLLER_H

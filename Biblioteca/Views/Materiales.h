@@ -21,10 +21,11 @@ private slots:
     void on_crearMaterialButton_clicked();
     void on_editarMaterialButton_clicked();
     void on_eliminarMaterialButton_clicked();
+    void on_buscarButton_clicked();
+    void aplicarFiltros();
 
 private:
     Ui::Materiales *ui;
 };
 
 #endif // MATERIALES_H
-

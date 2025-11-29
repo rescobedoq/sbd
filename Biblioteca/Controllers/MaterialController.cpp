@@ -163,3 +163,41 @@ QVector<std::shared_ptr<Material>> MaterialController::obtenerMaterialesDisponib
 std::shared_ptr<Material> MaterialController::obtenerMaterialPorIndice(const int& indice) {
     return repositorio.at(indice);
 }
+// Agregar estos tres métodos al final del archivo
+
+QVector<std::shared_ptr<Material>> MaterialController::buscarMaterialPorNombre(const QString& nombre) {
+    if (nombre.trimmed().isEmpty()) {
+        return repositorio.obtenerTodos();
+    }
+
+    QString nombreLower = nombre.toLower();
+    return repositorio.filtrar([nombreLower](const std::shared_ptr<Material>& m) {
+        return m->getTitulo().toLower().contains(nombreLower);
+    });
+}
+
+QVector<std::shared_ptr<Material>> MaterialController::filtrarPorDisponibilidad(bool disponible) {
+    return repositorio.filtrar([disponible](const std::shared_ptr<Material>& m) {
+        return m->getDisponible() == disponible;
+    });
+}
+
+QVector<std::shared_ptr<Material>> MaterialController::buscarYFiltrar(const QString& nombre, int filtroDisponibilidad) {
+    QString nombreLower = nombre.trimmed().toLower();
+
+    return repositorio.filtrar([nombreLower, filtroDisponibilidad](const std::shared_ptr<Material>& m) {
+        // Filtro por nombre (si está vacío, acepta todos)
+        bool cumpleNombre = nombreLower.isEmpty() || m->getTitulo().toLower().contains(nombreLower);
+
+        // Filtro por disponibilidad
+        // 0 = Todos, 1 = Disponibles, 2 = No disponibles
+        bool cumpleDisponibilidad = true;
+        if (filtroDisponibilidad == 1) {
+            cumpleDisponibilidad = m->getDisponible();
+        } else if (filtroDisponibilidad == 2) {
+            cumpleDisponibilidad = !m->getDisponible();
+        }
+
+        return cumpleNombre && cumpleDisponibilidad;
+    });
+}

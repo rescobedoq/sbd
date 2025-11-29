@@ -59,15 +59,15 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="txtBuscar"/>
      </item>
      <item>
-      <widget class="QComboBox" name="comboBox"/>
+      <widget class="QComboBox" name="comboDisponible"/>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="buscarButton">
        <property name="text">
-        <string>PushButton</string>
+        <string>Buscar</string>
        </property>
       </widget>
      </item>
