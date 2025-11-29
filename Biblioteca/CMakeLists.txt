@@ -51,6 +51,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Controllers/PrestamoController.h Controllers/PrestamoController.cpp
         Views/Prestamos.h Views/Prestamos.cpp Views/Prestamos.ui
         Views/PrestamoForm.h Views/PrestamoForm.cpp Views/PrestamoForm.ui
+        Models/Repositorio.h
+        Controllers/BibliotecaFacade.h Controllers/BibliotecaFacade.cpp
 
 
 

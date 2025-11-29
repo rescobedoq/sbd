@@ -23,6 +23,30 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
+      <widget class="QComboBox" name="comboBox">
+       <item>
+        <property name="text">
+         <string>Todos</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Pendientes</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Devueltos</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Vencidos</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
@@ -34,6 +58,22 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="txtBusqueda">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>5</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="placeholderText">
+        <string>Buscar usuario </string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnNuevoPrestamo">
