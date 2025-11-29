@@ -15,11 +15,22 @@ Materiales::Materiales(QWidget *parent) :
 {
     ui->setupUi(this);
     auto facade = BibliotecaFacade::obtenerInstancia();
+
     // Configura la tabla
     ui->tablaMateriales->setColumnCount(6);
     ui->tablaMateriales->setHorizontalHeaderLabels(
         {"ID", "Tipo", "Título", "Autor", "Año", "Disponible"}
         );
+
+    // Configurar ComboBox de filtro
+    ui->comboDisponible->clear();
+    ui->comboDisponible->addItem("Todos");
+    ui->comboDisponible->addItem("Disponibles");
+    ui->comboDisponible->addItem("No disponibles");
+    ui->comboDisponible->setCurrentIndex(0);
+
+    // Configurar placeholder del campo de búsqueda
+    ui->txtBuscar->setPlaceholderText("Buscar por título...");
 
     cargarTabla(facade->materiales()->obtenerMateriales());
 
@@ -33,6 +44,10 @@ Materiales::Materiales(QWidget *parent) :
     header->setSectionResizeMode(2, QHeaderView::Stretch);
     header->setSectionResizeMode(3, QHeaderView::Stretch);
 
+    // Conectar señales de búsqueda y filtrado
+    connect(ui->txtBuscar, &QLineEdit::textChanged, this, &Materiales::aplicarFiltros);
+    connect(ui->comboDisponible, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &Materiales::aplicarFiltros);
 }
 
 void Materiales::cargarTabla(const QVector<std::shared_ptr<Material>>& materiales) {
@@ -59,6 +74,15 @@ void Materiales::cargarTabla(const QVector<std::shared_ptr<Material>>& materiale
     resize(width() + 20, height());
 }
 
+void Materiales::aplicarFiltros() {
+    auto facade = BibliotecaFacade::obtenerInstancia();
+    QString textoBusqueda = ui->txtBuscar->text().trimmed();
+    int filtroDisponibilidad = ui->comboDisponible->currentIndex();
+
+    // Usar el método combinado de búsqueda y filtrado
+    auto materialesFiltrados = facade->materiales()->buscarYFiltrar(textoBusqueda, filtroDisponibilidad);
+    cargarTabla(materialesFiltrados);
+}
 
 Materiales::~Materiales()
 {
@@ -68,8 +92,9 @@ Materiales::~Materiales()
 void Materiales::on_crearMaterialButton_clicked(){
     MaterialesForm *form=new MaterialesForm(1);
     connect(form, &MaterialesForm::materialActualizado, this, [this]() {
-        //Si es que se aplican filtros
-        //ui->txtBuscarNombre->clear();
+        // Limpiar filtros al crear
+        ui->txtBuscar->clear();
+        ui->comboDisponible->setCurrentIndex(0);
         auto facade = BibliotecaFacade::obtenerInstancia();
         cargarTabla(facade->materiales()->obtenerMateriales());
     });
@@ -85,13 +110,19 @@ void Materiales::on_editarMaterialButton_clicked(){
         return;
     }
 
-    std::shared_ptr<Material> materialSeleccionado = facade->materiales()->obtenerMaterialPorIndice(row);
+    // Obtener el ID del material seleccionado de la tabla
+    int idMaterial = ui->tablaMateriales->item(row, 0)->text().toInt();
+    std::shared_ptr<Material> materialSeleccionado = facade->materiales()->obtenerMaterialPorID(idMaterial);
+
+    if (!materialSeleccionado) {
+        QMessageBox::warning(this, "Error", "No se pudo obtener el material seleccionado");
+        return;
+    }
+
     MaterialesForm *form = new MaterialesForm(2, materialSeleccionado);
     connect(form, &MaterialesForm::materialActualizado, this, [this]() {
-        //Si es que se aplican filtros
-        //ui->txtBuscarNombre->clear();
-        auto facade = BibliotecaFacade::obtenerInstancia();
-        cargarTabla(facade->materiales()->obtenerMateriales());
+        // Mantener los filtros al editar
+        aplicarFiltros();
     });
     form->show();
 }
@@ -104,15 +135,15 @@ void Materiales::on_eliminarMaterialButton_clicked(){
         return;
     }
 
-    // Obtener ID de la celda
+    // Obtener ID y título de la celda
     int id = ui->tablaMateriales->item(row, 0)->text().toInt();
-    QString nombre = ui->tablaMateriales->item(row, 1)->text();
+    QString titulo = ui->tablaMateriales->item(row, 2)->text();
 
     // Confirmación
     QMessageBox::StandardButton respuesta = QMessageBox::question(
         this,
         "Confirmar eliminación",
-        QString("¿Estás seguro de eliminar el material '%1'?").arg(nombre),
+        QString("¿Estás seguro de eliminar el material '%1'?").arg(titulo),
         QMessageBox::Yes | QMessageBox::No
         );
 
@@ -126,14 +157,8 @@ void Materiales::on_eliminarMaterialButton_clicked(){
 
     if (resultado.exito) {
         QMessageBox::information(this, "Éxito", resultado.mensaje);
-        // Para filtros
-        /*QString filtro = ui->txtBuscarNombre->text().trimmed();
-        if (filtro.isEmpty()) {
-            cargarTabla(facade->usuarios()->obtenerUsuarios());
-        } else {
-            cargarTabla(facade->usuarios()->buscarUsuario(filtro));
-        }*/
-        cargarTabla(facade->materiales()->obtenerMateriales());
+        // Mantener filtros después de eliminar
+        aplicarFiltros();
     } else {
         QString mensaje = resultado.mensaje + "\n\n";
         if (!resultado.prestamosActivos.isEmpty()) {
@@ -147,3 +172,6 @@ void Materiales::on_eliminarMaterialButton_clicked(){
     }
 }
 
+void Materiales::on_buscarButton_clicked() {
+    aplicarFiltros();
+}
