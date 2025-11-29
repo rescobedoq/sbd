@@ -1,21 +1,21 @@
-#ifndef USUARIOS_H
-#define USUARIOS_H
+#ifndef USUARIOSVIEW_H
+#define USUARIOSVIEW_H
 
 #include <QWidget>
 #include "../Models/usuario.h"
 
 namespace Ui {
-class Usuarios;
+class UsuariosView;
 }
 
-class Usuarios : public QWidget
+class UsuariosView : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Usuarios(QWidget* parent = nullptr);
+    explicit UsuariosView(QWidget* parent = nullptr);
     void cargarTabla(const QVector<std::shared_ptr<Usuario>>& usuarios);
-    ~Usuarios();
+    ~UsuariosView();
 
 private slots:
     void on_btnNuevoUsuario_clicked();
@@ -25,7 +25,7 @@ private slots:
     void on_btnRecargar_clicked();
 
 private:
-    Ui::Usuarios *ui;
+    Ui::UsuariosView *ui;
 };
 
-#endif // USUARIOS_H
+#endif // USUARIOSVIEW_H

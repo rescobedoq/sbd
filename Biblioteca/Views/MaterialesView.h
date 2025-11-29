@@ -1,21 +1,21 @@
-#ifndef MATERIALES_H
-#define MATERIALES_H
+#ifndef MATERIALESVIEW_H
+#define MATERIALESVIEW_H
 
 #include <QWidget>
 #include "../Models/material.h"
 
 namespace Ui {
-class Materiales;
+class MaterialesView;
 }
 
-class Materiales : public QWidget
+class MaterialesView : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Materiales(QWidget *parent = nullptr);
+    explicit MaterialesView(QWidget *parent = nullptr);
     void cargarTabla(const QVector<std::shared_ptr<Material>>& materiales);
-    ~Materiales();
+    ~MaterialesView();
 
 private slots:
     void on_crearMaterialButton_clicked();
@@ -25,7 +25,7 @@ private slots:
     void aplicarFiltros();
 
 private:
-    Ui::Materiales *ui;
+    Ui::MaterialesView *ui;
 };
 
-#endif // MATERIALES_H
+#endif // MATERIALESVIEW_H

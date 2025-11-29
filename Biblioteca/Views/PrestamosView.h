@@ -1,27 +1,27 @@
-#ifndef PRESTAMOS_H
-#define PRESTAMOS_H
+#ifndef PRESTAMOSVIEW_H
+#define PRESTAMOSVIEW_H
 
 #include <QWidget>
 #include "../Models/Prestamo.h"
 
 namespace Ui {
-class Prestamos;
+class PrestamosView;
 }
 
-class Prestamos : public QWidget
+class PrestamosView : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Prestamos( QWidget *parent = nullptr);
+    explicit PrestamosView( QWidget *parent = nullptr);
 
     // 💡 CAMBIO: Cambiamos la función de carga de tabla
     void cargarTablaFiltrada();
 
-    ~Prestamos();
+    ~PrestamosView();
 
 private:
-    Ui::Prestamos *ui;
+    Ui::PrestamosView *ui;
 
 private slots:
     void on_btnNuevoPrestamo_clicked();
@@ -32,4 +32,4 @@ private slots:
     void buscarPrestamos();
 };
 
-#endif // PRESTAMOS_H
+#endif // PRESTAMOSVIEW_H

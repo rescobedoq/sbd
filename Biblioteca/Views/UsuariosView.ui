@@ -1,58 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Materiales</class>
- <widget class="QWidget" name="Materiales">
-  <property name="enabled">
-   <bool>true</bool>
-  </property>
+ <class>UsuariosView</class>
+ <widget class="QWidget" name="UsuariosView">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>763</width>
-    <height>260</height>
+    <width>422</width>
+    <height>224</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Usuarios</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Lista de Materiales</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="sizeConstraint">
+      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+     </property>
      <item>
-      <widget class="QLineEdit" name="txtBuscar"/>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboDisponible"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="buscarButton">
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Buscar</string>
+        <string>Buscar:</string>
        </property>
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_5">
+      <widget class="QLineEdit" name="txtBuscarNombre">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnBuscarUsuario">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="mouseTracking">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">padding: 4px;</string>
+       </property>
+       <property name="text">
+        <string>🔍</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnRecargar">
+       <property name="text">
+        <string>🔄 Recargar</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
        </property>
@@ -69,9 +92,9 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="crearMaterialButton">
+      <widget class="QPushButton" name="btnNuevoUsuario">
        <property name="text">
-        <string>Agregar Nuevo</string>
+        <string>Nuevo Usuario</string>
        </property>
       </widget>
      </item>
@@ -91,36 +114,10 @@
     </layout>
    </item>
    <item>
-    <widget class="QTableWidget" name="tablaMateriales"/>
+    <widget class="QTableWidget" name="tblUsuarios"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="editarMaterialButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Editar</string>
-       </property>
-      </widget>
-     </item>
      <item>
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
@@ -135,20 +132,34 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="eliminarMaterialButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+      <widget class="QPushButton" name="btnEditarUsuario">
+       <property name="text">
+        <string>Editar</string>
        </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnEliminarUsuario">
        <property name="text">
         <string>Eliminar</string>
        </property>
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_4">
+      <spacer name="horizontalSpacer_5">
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
        </property>

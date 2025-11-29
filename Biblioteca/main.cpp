@@ -4,14 +4,15 @@
 #include "Models/Prestamo.h"
 #include "Models/PrestamoDAO.h"
 #include "Models/BaseDatos.h"
-#include "Views/Materiales.h"
-#include "Views/Usuarios.h"
-#include "Views/Prestamos.h"
+#include "Views/MaterialesView.h"
+#include "Views/UsuariosView.h"
+#include "Views/PrestamosView.h"
 #include "Controllers/MaterialController.h"
 #include "Models/LibroDAO.h"
 #include "Controllers/BibliotecaFacade.h"
 #include "Controllers/UsuarioController.h"
 #include "Controllers/PrestamoController.h"
+#include "Views/mainwindow.h"
 
 int main(int argc, char *argv[])
 {
@@ -60,12 +61,15 @@ int main(int argc, char *argv[])
     prestamoController->cargarPrestamos();
 
     // Mostrando ventana de materiales
-    Usuarios *u = new Usuarios();
+    /*UsuariosView *u = new UsuariosView();
     u->show();
-    Materiales *m = new Materiales();
+    MaterialesView *m = new MaterialesView();
     m->show();
-    Prestamos *p = new Prestamos();
-    p->show();
+    PrestamosView *p = new PrestamosView();
+    p->show();*/
+
+    MainWindow *w = new MainWindow();
+    w->show();
 
     return a.exec();
 }

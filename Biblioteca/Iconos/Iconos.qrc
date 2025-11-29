@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/Iconos">
+        <file>book.svg</file>
+        <file>pencil-square.svg</file>
+        <file>person.svg</file>
+    </qresource>
+</RCC>

@@ -1,5 +1,5 @@
-#include "Prestamos.h"
-#include "ui_Prestamos.h"
+#include "PrestamosView.h"
+#include "ui_PrestamosView.h"
 #include "PrestamoForm.h"
 #include "../Controllers/BibliotecaFacade.h"
 #include <QMessageBox>
@@ -9,9 +9,9 @@
 
 // CONSTRUCTOR
 // =================================================================
-Prestamos::Prestamos(QWidget *parent)
+PrestamosView::PrestamosView(QWidget *parent)
     : QWidget(parent),
-    ui(new Ui::Prestamos)
+    ui(new Ui::PrestamosView)
 {
     ui->setupUi(this);
     auto facade = BibliotecaFacade::obtenerInstancia();
@@ -23,7 +23,7 @@ Prestamos::Prestamos(QWidget *parent)
     if (txtBusqueda) {
         // Conectamos la señal textChanged() al nuevo slot buscarPrestamos()
         connect(txtBusqueda, &QLineEdit::textChanged,
-                this, &Prestamos::buscarPrestamos);
+                this, &PrestamosView::buscarPrestamos);
     } else {
         qDebug() << "ERROR: No se encontró el campo de búsqueda 'txtBusqueda'. Verifique Prestamos.ui.";
     }
@@ -35,7 +35,7 @@ Prestamos::Prestamos(QWidget *parent)
 // =================================================================
 // FUNCIÓN DE BÚSQUEDA (NUEVA IMPLEMENTACIÓN)
 // =================================================================
-void Prestamos::buscarPrestamos() {
+void PrestamosView::buscarPrestamos() {
     // 1. Obtener el texto de búsqueda y el índice de estado
     QString busqueda = ui->txtBusqueda->text();
     int estadoIndex = ui->comboBox->currentIndex();
@@ -53,7 +53,7 @@ void Prestamos::buscarPrestamos() {
 
 // FUNCIÓN DE CARGA FILTRADA
 // =================================================================
-void Prestamos::cargarTablaFiltrada(){
+void PrestamosView::cargarTablaFiltrada(){
     auto facade = BibliotecaFacade::obtenerInstancia();
     const QList<std::shared_ptr<Prestamo>> prestamosFiltrados = facade->prestamos()->getPrestamosFiltrados();
     // Configura la tabla
@@ -97,28 +97,28 @@ void Prestamos::cargarTablaFiltrada(){
     header->setSectionResizeMode(2, QHeaderView::Stretch);
 }
 
-void Prestamos::on_comboBox_currentIndexChanged(int index) {
+void PrestamosView::on_comboBox_currentIndexChanged(int index) {
 
     Q_UNUSED(index);
     buscarPrestamos();
 }
 
-Prestamos::~Prestamos()
+PrestamosView::~PrestamosView()
 {
     delete ui;
 }
 
-void Prestamos::on_btnNuevoPrestamo_clicked(){
+void PrestamosView::on_btnNuevoPrestamo_clicked(){
     auto facade = BibliotecaFacade::obtenerInstancia();
     PrestamoForm *form = new PrestamoForm(this);
     // Conectar a la lógica unificada de refresco (buscarPrestamos)
-    connect(form, &PrestamoForm::prestamoCreado, this, &Prestamos::buscarPrestamos);
+    connect(form, &PrestamoForm::prestamoCreado, this, &PrestamosView::buscarPrestamos);
 
     form->setModal(true);
     form->exec();
 }
 
-void Prestamos::on_btnRegistrarDevolucion_clicked(){
+void PrestamosView::on_btnRegistrarDevolucion_clicked(){
     int row = ui->tblPrestamos->currentRow();
     if (row < 0) {
         QMessageBox::warning(this, "Advertencia", "Por favor selecciona un prestamo de la tabla");

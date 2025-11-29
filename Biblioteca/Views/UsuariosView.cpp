@@ -1,5 +1,5 @@
-#include "Usuarios.h"
-#include "ui_Usuarios.h"
+#include "UsuariosView.h"
+#include "ui_UsuariosView.h"
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -10,9 +10,9 @@
 #include "../Controllers/BibliotecaFacade.h"
 #include "UsuarioForm.h"
 
-Usuarios::Usuarios(QWidget *parent)
+UsuariosView::UsuariosView(QWidget *parent)
     : QWidget(parent),
-      ui(new Ui::Usuarios)
+      ui(new Ui::UsuariosView)
 {
     ui->setupUi(this);
     auto facade = BibliotecaFacade::obtenerInstancia();
@@ -28,7 +28,7 @@ Usuarios::Usuarios(QWidget *parent)
     header->setSectionResizeMode(1, QHeaderView::Stretch);
 }
 
-void Usuarios::cargarTabla(const QVector<std::shared_ptr<Usuario>>& usuarios) {
+void UsuariosView::cargarTabla(const QVector<std::shared_ptr<Usuario>>& usuarios) {
     ui->tblUsuarios->setRowCount(0);
 
     for (auto &u : usuarios)
@@ -40,7 +40,7 @@ void Usuarios::cargarTabla(const QVector<std::shared_ptr<Usuario>>& usuarios) {
     }
 }
 
-void Usuarios::on_btnNuevoUsuario_clicked() {
+void UsuariosView::on_btnNuevoUsuario_clicked() {
     UsuarioForm *form = new UsuarioForm(1);
     connect(form, &UsuarioForm::usuarioActualizado, this, [this]() {
         ui->txtBuscarNombre->clear();
@@ -50,7 +50,7 @@ void Usuarios::on_btnNuevoUsuario_clicked() {
     form->show();
 }
 
-void Usuarios::on_btnEditarUsuario_clicked() {
+void UsuariosView::on_btnEditarUsuario_clicked() {
     auto facade = BibliotecaFacade::obtenerInstancia();
     int fila = ui->tblUsuarios->currentRow();
     if (fila < 0) return;
@@ -64,7 +64,7 @@ void Usuarios::on_btnEditarUsuario_clicked() {
     form->show();
 }
 
-void Usuarios::on_btnEliminarUsuario_clicked() {
+void UsuariosView::on_btnEliminarUsuario_clicked() {
     int fila = ui->tblUsuarios->currentRow();
 
     if (fila < 0) {
@@ -113,7 +113,7 @@ void Usuarios::on_btnEliminarUsuario_clicked() {
     }
 }
 
-void Usuarios::on_btnBuscarUsuario_clicked(){
+void UsuariosView::on_btnBuscarUsuario_clicked(){
     QString texto = ui->txtBuscarNombre->text().trimmed();
 
     if (texto.isEmpty()) {
@@ -133,11 +133,11 @@ void Usuarios::on_btnBuscarUsuario_clicked(){
     cargarTabla(resultados);
 }
 
-void Usuarios::on_btnRecargar_clicked(){
+void UsuariosView::on_btnRecargar_clicked(){
     auto facade = BibliotecaFacade::obtenerInstancia();
     cargarTabla(facade->usuarios()->obtenerUsuarios());
 }
 
-Usuarios::~Usuarios() {
+UsuariosView::~UsuariosView() {
     delete ui;
 }

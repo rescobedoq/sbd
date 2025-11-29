@@ -14,9 +14,6 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql)
 
 set(PROJECT_SOURCES
         main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -30,8 +27,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Models/tesis.h Models/tesis.cpp
         Models/revista.h Models/revista.cpp
         Models/usuario.h Models/usuario.cpp
-        Views/Materiales.h Views/Materiales.cpp Views/Materiales.ui
-        Views/Usuarios.h Views/Usuarios.cpp Views/Usuarios.ui
+        Views/MaterialesView.h Views/MaterialesView.cpp Views/MaterialesView.ui
+        Views/UsuariosView.h Views/UsuariosView.cpp Views/UsuariosView.ui
+        Views/mainwindow.h Views/mainwindow.cpp Views/mainwindow.ui
+
         Controllers/MaterialController.h Controllers/MaterialController.cpp
         Controllers/UsuarioController.h Controllers/UsuarioController.cpp
         Models/BaseDatos.h Models/BaseDatos.cpp
@@ -49,11 +48,12 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Models/Prestamo.h Models/Prestamo.cpp
         Models/PrestamoDAO.h Models/PrestamoDAO.cpp
         Controllers/PrestamoController.h Controllers/PrestamoController.cpp
-        Views/Prestamos.h Views/Prestamos.cpp Views/Prestamos.ui
+        Views/PrestamosView.h Views/PrestamosView.cpp Views/PrestamosView.ui
         Views/PrestamoForm.h Views/PrestamoForm.cpp Views/PrestamoForm.ui
         Models/Repositorio.h
         Controllers/BibliotecaFacade.h
         Controllers/BibliotecaFacade.cpp
+        Iconos/Iconos.qrc
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Biblioteca APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

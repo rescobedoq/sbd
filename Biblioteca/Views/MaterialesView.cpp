@@ -1,5 +1,5 @@
-#include "Materiales.h"
-#include "ui_Materiales.h"
+#include "MaterialesView.h"
+#include "ui_MaterialesView.h"
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -9,9 +9,9 @@
 #include "MaterialesForm.h"
 #include "../Controllers/BibliotecaFacade.h"
 
-Materiales::Materiales(QWidget *parent) :
+MaterialesView::MaterialesView(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Materiales)
+    ui(new Ui::MaterialesView)
 {
     ui->setupUi(this);
     auto facade = BibliotecaFacade::obtenerInstancia();
@@ -45,12 +45,12 @@ Materiales::Materiales(QWidget *parent) :
     header->setSectionResizeMode(3, QHeaderView::Stretch);
 
     // Conectar señales de búsqueda y filtrado
-    connect(ui->txtBuscar, &QLineEdit::textChanged, this, &Materiales::aplicarFiltros);
+    connect(ui->txtBuscar, &QLineEdit::textChanged, this, &MaterialesView::aplicarFiltros);
     connect(ui->comboDisponible, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &Materiales::aplicarFiltros);
+            this, &MaterialesView::aplicarFiltros);
 }
 
-void Materiales::cargarTabla(const QVector<std::shared_ptr<Material>>& materiales) {
+void MaterialesView::cargarTabla(const QVector<std::shared_ptr<Material>>& materiales) {
     ui->tablaMateriales->setRowCount(0);
 
     for (auto &m : materiales)
@@ -74,7 +74,7 @@ void Materiales::cargarTabla(const QVector<std::shared_ptr<Material>>& materiale
     resize(width() + 20, height());
 }
 
-void Materiales::aplicarFiltros() {
+void MaterialesView::aplicarFiltros() {
     auto facade = BibliotecaFacade::obtenerInstancia();
     QString textoBusqueda = ui->txtBuscar->text().trimmed();
     int filtroDisponibilidad = ui->comboDisponible->currentIndex();
@@ -84,12 +84,12 @@ void Materiales::aplicarFiltros() {
     cargarTabla(materialesFiltrados);
 }
 
-Materiales::~Materiales()
+MaterialesView::~MaterialesView()
 {
     delete ui;
 }
 
-void Materiales::on_crearMaterialButton_clicked(){
+void MaterialesView::on_crearMaterialButton_clicked(){
     MaterialesForm *form=new MaterialesForm(1);
     connect(form, &MaterialesForm::materialActualizado, this, [this]() {
         // Limpiar filtros al crear
@@ -101,7 +101,7 @@ void Materiales::on_crearMaterialButton_clicked(){
     form->show();
 }
 
-void Materiales::on_editarMaterialButton_clicked(){
+void MaterialesView::on_editarMaterialButton_clicked(){
     auto facade = BibliotecaFacade::obtenerInstancia();
     int row = ui->tablaMateriales->currentRow();
 
@@ -127,7 +127,7 @@ void Materiales::on_editarMaterialButton_clicked(){
     form->show();
 }
 
-void Materiales::on_eliminarMaterialButton_clicked(){
+void MaterialesView::on_eliminarMaterialButton_clicked(){
     int row = ui->tablaMateriales->currentRow();
 
     if (row < 0) {
@@ -172,6 +172,6 @@ void Materiales::on_eliminarMaterialButton_clicked(){
     }
 }
 
-void Materiales::on_buscarButton_clicked() {
+void MaterialesView::on_buscarButton_clicked() {
     aplicarFiltros();
 }
