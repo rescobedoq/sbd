@@ -55,8 +55,7 @@ void Prestamos::buscarPrestamos() {
 // =================================================================
 void Prestamos::cargarTablaFiltrada(){
     auto facade = BibliotecaFacade::obtenerInstancia();
-    const QList<std::shared_ptr<Prestamo>>& prestamosFiltrados =
-        facade->prestamos()->getPrestamosFiltrados();
+    const QList<std::shared_ptr<Prestamo>> prestamosFiltrados = facade->prestamos()->getPrestamosFiltrados();
 
     // Configura la tabla
     ui->tblPrestamos->setColumnCount(7);

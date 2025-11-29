@@ -7,84 +7,135 @@
 #include <QVector>
 #include <QMessageBox>
 #include "../Models/usuario.h"
+#include "../Controllers/BibliotecaFacade.h"
 #include "UsuarioForm.h"
 
-/*Modificar interfaz y agregar pantallas para incluir:
- * crear usuario
- * detalles del usuario seleccionado
- * modificar usuario seleccionado
- * eliminar usuario seleccionado
-*/
-Usuarios::Usuarios(UsuarioController* controller, QWidget *parent)
-    : QWidget(parent), controllerUsuario(controller)
-    , ui(new Ui::Usuarios)
+Usuarios::Usuarios(QWidget *parent)
+    : QWidget(parent),
+    ui(new Ui::Usuarios)
 {
     ui->setupUi(this);
-    cargarTabla();
-}
-
-void Usuarios::cargarTabla() {
-    QVector<std::shared_ptr<Usuario>> usuariosRef = controllerUsuario->obtenerUsuarios();
-
-    // Configura la tabla
+    auto facade = BibliotecaFacade::obtenerInstancia();
     ui->tblUsuarios->setColumnCount(2);
     ui->tblUsuarios->setHorizontalHeaderLabels(
         {"ID", "Nombre"}
         );
-    ui->tblUsuarios->setRowCount(usuariosRef.size());
-
-    // Llenar tabla
-    for (int i = 0; i < usuariosRef.size(); ++i) {
-        std::shared_ptr<Usuario> u = usuariosRef[i];
-        ui->tblUsuarios->setItem(i, 0, new QTableWidgetItem(QString::number(u->getId())));
-        ui->tblUsuarios->setItem(i, 1, new QTableWidgetItem(u->getNombre()));
-    }
-    ui->tblUsuarios->resizeColumnsToContents();
-    ui->tblUsuarios->resizeRowsToContents();
-    ui->tblUsuarios->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-    ui->tblUsuarios->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui->tblUsuarios->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    layout()->activate();   // recalcula el layout
-    adjustSize();
-    resize(width() + 20, height());
+    cargarTabla(facade->usuarios()->obtenerUsuarios());
 
     QHeaderView *header = ui->tblUsuarios->horizontalHeader();
-
-    header->setSectionResizeMode(QHeaderView::Fixed);   // Todas fijas por defecto
+    ui->tblUsuarios->setColumnWidth(0, 50);
+    header->setSectionResizeMode(QHeaderView::Fixed);
     header->setSectionResizeMode(1, QHeaderView::Stretch);
 }
 
-void Usuarios::on_btnNuevoUsuario_clicked() {
-    // Crear una nueva ventana de detalles
-    UsuarioForm *form = new UsuarioForm(controllerUsuario, 1);
-    connect(form, &UsuarioForm::usuarioActualizado, this, &Usuarios::cargarTabla);
+void Usuarios::cargarTabla(const QVector<std::shared_ptr<Usuario>>& usuarios) {
+    ui->tblUsuarios->setRowCount(0);
 
-    // Mostrar la ventana
+    for (auto &u : usuarios)
+    {
+        int row = ui->tblUsuarios->rowCount();  // siguiente fila
+        ui->tblUsuarios->insertRow(row);
+        ui->tblUsuarios->setItem(row, 0, new QTableWidgetItem(QString::number(u->getId())));
+        ui->tblUsuarios->setItem(row, 1, new QTableWidgetItem(u->getNombre()));
+    }
+}
+
+void Usuarios::on_btnNuevoUsuario_clicked() {
+    UsuarioForm *form = new UsuarioForm(1);
+    connect(form, &UsuarioForm::usuarioActualizado, this, [this]() {
+        ui->txtBuscarNombre->clear();
+        auto facade = BibliotecaFacade::obtenerInstancia();
+        cargarTabla(facade->usuarios()->obtenerUsuarios());
+    });
     form->show();
 }
 
 void Usuarios::on_btnEditarUsuario_clicked() {
+    auto facade = BibliotecaFacade::obtenerInstancia();
     int fila = ui->tblUsuarios->currentRow();
-    if (fila < 0) return; // nada seleccionado
-
-    std::shared_ptr<Usuario> usuarioSeleccionado = controllerUsuario->obtenerUsuarios()[fila];
-    UsuarioForm *form = new UsuarioForm(controllerUsuario, 2, usuarioSeleccionado);
-    connect(form, &UsuarioForm::usuarioActualizado, this, &Usuarios::cargarTabla);
-    // Mostrar la ventana
+    if (fila < 0) return;
+    std::shared_ptr<Usuario> usuarioSeleccionado = facade->usuarios()->obtenerUsuarioPorIndice(fila);
+    UsuarioForm *form = new UsuarioForm(2, usuarioSeleccionado);
+    connect(form, &UsuarioForm::usuarioActualizado, this, [this]() {
+        ui->txtBuscarNombre->clear();
+        auto facade = BibliotecaFacade::obtenerInstancia();
+        cargarTabla(facade->usuarios()->obtenerUsuarios());
+    });
     form->show();
 }
 
 void Usuarios::on_btnEliminarUsuario_clicked() {
     int fila = ui->tblUsuarios->currentRow();
-    if (fila < 0) return; // nada seleccionado
 
-    std::shared_ptr<Usuario> usuarioSeleccionado = controllerUsuario->obtenerUsuarios()[fila];
-    if(controllerUsuario->eliminarUsuario(usuarioSeleccionado->getId())){
-        QMessageBox::information(this, "Usuario Eliminado", "El usuario se elimino correctamente.");
-    } else {
-        QMessageBox::warning(this, "Error al eliminar", "No se pudo eliminar el usuario");
+    if (fila < 0) {
+        QMessageBox::warning(this, "Advertencia", "Selecciona un usuario de la tabla");
+        return;
     }
-    cargarTabla();
+
+    // Obtener ID de la celda
+    int id = ui->tblUsuarios->item(fila, 0)->text().toInt();
+    QString nombre = ui->tblUsuarios->item(fila, 1)->text();
+
+    // Confirmación
+    QMessageBox::StandardButton respuesta = QMessageBox::question(
+        this,
+        "Confirmar eliminación",
+        QString("¿Estás seguro de eliminar al usuario '%1'?").arg(nombre),
+        QMessageBox::Yes | QMessageBox::No
+        );
+
+    if (respuesta != QMessageBox::Yes) {
+        return;
+    }
+
+    // Eliminar con validaciones
+    auto facade = BibliotecaFacade::obtenerInstancia();
+    auto resultado = facade->eliminarUsuario(id);
+
+    if (resultado.exito) {
+        QMessageBox::information(this, "Éxito", resultado.mensaje);
+        QString filtro = ui->txtBuscarNombre->text().trimmed();
+        if (filtro.isEmpty()) {
+            cargarTabla(facade->usuarios()->obtenerUsuarios());
+        } else {
+            cargarTabla(facade->usuarios()->buscarUsuario(filtro));
+        }
+    } else {
+        QString mensaje = resultado.mensaje + "\n\n";
+        if (!resultado.prestamosActivos.isEmpty()) {
+            mensaje += "Préstamos activos:\n";
+            for (const auto& prestamo : resultado.prestamosActivos) {
+                mensaje += "• " + prestamo + "\n";
+            }
+            mensaje += "\nRegistre las devoluciones antes de eliminar.";
+        }
+        QMessageBox::warning(this, "No se puede eliminar", mensaje);
+    }
+}
+
+void Usuarios::on_btnBuscarUsuario_clicked(){
+    QString texto = ui->txtBuscarNombre->text().trimmed();
+
+    if (texto.isEmpty()) {
+        QMessageBox::warning(this, "Advertencia", "Ingrese un nombre para buscar");
+        return;
+    }
+
+    auto facade = BibliotecaFacade::obtenerInstancia();
+    auto resultados = facade->usuarios()->buscarUsuario(texto);
+
+    if (resultados.isEmpty()) {
+        QMessageBox::information(this, "Sin resultados",
+                                 QString("No se encontraron usuarios con '%1'").arg(texto));
+        return;
+    }
+
+    cargarTabla(resultados);
+}
+
+void Usuarios::on_btnRecargar_clicked(){
+    auto facade = BibliotecaFacade::obtenerInstancia();
+    cargarTabla(facade->usuarios()->obtenerUsuarios());
 }
 
 Usuarios::~Usuarios() {

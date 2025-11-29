@@ -11,9 +11,15 @@
 #include <QDebug>
 #include "../Models/usuario.h"
 #include "../Models/UsuarioDAO.h"
+#include "../Models/Repositorio.h"
 
 class UsuarioController
 {
+private:
+    UsuarioDAO dao;
+    Repositorio<Usuario> repositorio;
+    bool cacheInicializada = false;
+
 public:
     UsuarioController();
 
@@ -21,20 +27,18 @@ public:
     bool actualizarUsuario(const int& id,const QString& nombre);
     bool agregarUsuario(const int& id,const QString& nombre);
     bool eliminarUsuario(int id);
+    QVector<std::shared_ptr<Usuario>> buscarUsuario(const QString& nombre);
 
     // Metodos utilitarios
     bool cargarUsuarios();
     bool guardarUsuarios(const QString& archivo);
-    QVector<std::shared_ptr<Usuario>>& obtenerUsuarios();
-    std::shared_ptr<Usuario> obtenerUsuario(const int& pos);
-    int obtenerIndicePorID(int id);
+    QVector<std::shared_ptr<Usuario>> obtenerUsuarios();
+    std::shared_ptr<Usuario> obtenerUsuarioPorIndice(const int& indice);
 
     // Metodos para busqueda
     std::shared_ptr<Usuario> obtenerUsuarioPorID(int id);
 
-private:
-    UsuarioDAO dao;
-    QVector<std::shared_ptr<Usuario>> usuarios;
+
 };
 
 #endif // USUARIOCONTROLLER_H

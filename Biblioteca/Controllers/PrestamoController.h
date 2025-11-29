@@ -37,7 +37,7 @@ public:
     QList<std::shared_ptr<Prestamo>> obtenerPrestamosVencidos();
     QList<std::shared_ptr<Prestamo>> obtenerHistorialUsuario(int usuarioId);
     QVector<std::shared_ptr<Prestamo>> obtenerPrestamos();
-    const QList<std::shared_ptr<Prestamo>>& getPrestamosFiltrados() const;
+    const QList<std::shared_ptr<Prestamo>> getPrestamosFiltrados() const;
     std::shared_ptr<Prestamo> obtenerPrestamoPorID(int id);
     std::shared_ptr<Prestamo> obtenerPrestamoPorIndice(const int& indice);
     QVector<std::shared_ptr<Prestamo>> obtenerPrestamosActivosPorUsuario(int usuarioId);

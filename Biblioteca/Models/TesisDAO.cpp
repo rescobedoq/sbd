@@ -41,7 +41,7 @@ bool TesisDAO::actualizar(const std::shared_ptr<Tesis>& tesis) {
     QSqlQuery query(BaseDatos::getBD());
     query.prepare("UPDATE Tesis SET universidad = :universidad WHERE id_material = :id");
     query.bindValue(":universidad", tesis->getUniversidad());
-    query.bindValue(":id", tesis->getID());
+    query.bindValue(":id", tesis->getId());
 
     if (!query.exec()) {
         qDebug() << "Error SQL en TesisDAO::actualizar():" << query.lastError().text();

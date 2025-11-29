@@ -8,21 +8,23 @@ MaterialController::MaterialController() {
     cargarMateriales();
 }
 
-void MaterialController::cargarMateriales() {
-    materiales.clear();
+bool MaterialController::cargarMateriales() {
+    if (cacheInicializada) return true;
+    repositorio.limpiar();
 
     auto libros = libroDAO.obtenerLibros();
     auto revistas = revistaDAO.obtenerRevistas();
     auto tesis = tesisDAO.obtenerTesis();
 
-    for (const auto& l : libros) materiales.append(l);
-    for (const auto& r : revistas) materiales.append(r);
-    for (const auto& t : tesis) materiales.append(t);
+    for (const auto& l : libros) repositorio.agregar(l);
+    for (const auto& r : revistas) repositorio.agregar(r);
+    for (const auto& t : tesis) repositorio.agregar(t);
 
-    qDebug() << "Materiales cargados:" << materiales.size();
+    qDebug() << "Materiales cargados:" << repositorio.contar();
+    return true;
 }
 
-std::shared_ptr<Material> MaterialController::crearMaterial(
+bool MaterialController::crearMaterial(
     int tipo,
     const QString& titulo,
     const QString& autor,
@@ -31,7 +33,10 @@ std::shared_ptr<Material> MaterialController::crearMaterial(
     bool disponible)
 {
     Material* raw = MaterialFactory::crearMaterial(tipo);
-    if (!raw) return nullptr;
+    if (!raw){
+        qDebug() << "Error en MaterialController.crearMaterial(): Creacion en Factory fallida";
+        return false;
+    }
 
     std::shared_ptr<Material> material(raw);
 
@@ -56,12 +61,8 @@ std::shared_ptr<Material> MaterialController::crearMaterial(
         tesisDAO.insertar(tesisPtr);
     }
 
-    materiales.append(material);
-    return material;
-}
-
-QVector<std::shared_ptr<Material>>& MaterialController::listarMateriales() {
-    return materiales;
+    repositorio.agregar(material);
+    return true;
 }
 
 bool MaterialController::actualizarMaterial(
@@ -72,62 +73,93 @@ bool MaterialController::actualizarMaterial(
     const QString& extra,
     bool disponible)
 {
-    for (auto& material : materiales) {
-        if (material->getID() == id) {
 
-            material->setTitulo(titulo);
-            material->setAutor(autor);
-            material->setAnio(anio);
-            material->setDisponible(disponible);
-
-            QString tipo = material->obtenerTipo();
-
-            if (tipo == "Libro") {
-                auto l = std::static_pointer_cast<Libro>(material);
-                l->setGenero(extra);
-                libroDAO.actualizar(l);
-            }
-            else if (tipo == "Revista") {
-                auto r = std::static_pointer_cast<Revista>(material);
-                r->setVolumen(extra.toInt());
-                revistaDAO.actualizar(r);
-            }
-            else if (tipo == "Tesis") {
-                auto t = std::static_pointer_cast<Tesis>(material);
-                t->setUniversidad(extra);
-                tesisDAO.actualizar(t);
-            }
-
-            return true;
-        }
+    auto material = repositorio.buscarPorId(id);
+    if (!material) {
+        qDebug() << "Error en MaterialController.actualizarMaterial(): No se encontro el material a actualizar";
+        return false;
     }
-    return false;
+
+    // Actualizar campos base
+    material->setTitulo(titulo);
+    material->setAutor(autor);
+    material->setAnio(anio);
+    material->setDisponible(disponible);
+
+    // Actualizar según tipo
+    QString tipo = material->obtenerTipo();
+
+    if (tipo == "Libro") {
+        auto l = std::static_pointer_cast<Libro>(material);
+        l->setGenero(extra);
+        libroDAO.actualizar(l);
+    }
+    else if (tipo == "Revista") {
+        auto r = std::static_pointer_cast<Revista>(material);
+        r->setVolumen(extra.toInt());
+        revistaDAO.actualizar(r);
+    }
+    else if (tipo == "Tesis") {
+        auto t = std::static_pointer_cast<Tesis>(material);
+        t->setUniversidad(extra);
+        tesisDAO.actualizar(t);
+    }
+
+    return true;
 }
 
 bool MaterialController::eliminarMaterial(int id) {
+    auto material = repositorio.buscarPorId(id);
+    if (!material) {
+        qDebug() << "Error en MaterialController.eliminarMaterial(): No se encontro el material a eliminar";
+        return false;
+    }
 
-    for (int i = 0; i < materiales.size(); i++) {
-        if (materiales[i]->getID() == id) {
+    QString tipo = material->obtenerTipo();
 
-            QString tipo = materiales[i]->obtenerTipo();
+    if (tipo == "Libro") {
+        if(!libroDAO.eliminar(id)){
+            return false;
+        }
+    } else if (tipo == "Revista") {
+        if(!revistaDAO.eliminar(id)){
+            return false;
+        }
 
-            if (tipo == "Libro")          libroDAO.eliminar(id);
-            else if (tipo == "Revista")   revistaDAO.eliminar(id);
-            else if (tipo == "Tesis")     tesisDAO.eliminar(id);
-
-            materiales.remove(i);
-            return true;
+    } else if (tipo == "Tesis") {
+        if(!tesisDAO.eliminar(id)){
+            return false;
         }
     }
-    return false;
+    repositorio.remover(id);
+    return true;
 }
+
 bool MaterialController::cambiarDisponibilidad(int id, bool disponible) {
-    for (auto& material : materiales) {
-        if (material->getID() == id) {
-            materialDAO.actualizarDisponibilidad(id, disponible);
-            material->setDisponible(disponible);
-            return true;
-        }
+    auto material = repositorio.buscarPorId(id);
+    if (!material) {
+        qDebug() << "Error en MaterialController.cambiarDisponibilidad(): No se encontro el material a modificar";
+        return false;
     }
-    return false;
+    materialDAO.actualizarDisponibilidad(id, disponible);
+    material->setDisponible(disponible);
+    return true;
+}
+
+QVector<std::shared_ptr<Material>> MaterialController::obtenerMateriales() {
+    return repositorio.obtenerTodos();
+}
+
+std::shared_ptr<Material> MaterialController::obtenerMaterialPorID(int id) {
+    return repositorio.buscarPorId(id);
+}
+
+QVector<std::shared_ptr<Material>> MaterialController::obtenerMaterialesDisponibles() {
+    return repositorio.filtrar([](const std::shared_ptr<Material>& m){
+        return m->getDisponible();
+    });
+}
+
+std::shared_ptr<Material> MaterialController::obtenerMaterialPorIndice(const int& indice) {
+    return repositorio.at(indice);
 }

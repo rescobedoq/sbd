@@ -2,7 +2,7 @@
 #define USUARIOS_H
 
 #include <QWidget>
-#include "../Controllers/UsuarioController.h"
+#include "../Models/usuario.h"
 
 namespace Ui {
 class Usuarios;
@@ -13,17 +13,18 @@ class Usuarios : public QWidget
     Q_OBJECT
 
 public:
-    explicit Usuarios(UsuarioController* controller, QWidget* parent = nullptr);
-    void cargarTabla();
+    explicit Usuarios(QWidget* parent = nullptr);
+    void cargarTabla(const QVector<std::shared_ptr<Usuario>>& usuarios);
     ~Usuarios();
 
 private slots:
     void on_btnNuevoUsuario_clicked();
     void on_btnEditarUsuario_clicked();
     void on_btnEliminarUsuario_clicked();
+    void on_btnBuscarUsuario_clicked();
+    void on_btnRecargar_clicked();
 
 private:
-    UsuarioController* controllerUsuario;
     Ui::Usuarios *ui;
 };
 

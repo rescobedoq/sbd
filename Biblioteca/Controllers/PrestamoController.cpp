@@ -112,7 +112,6 @@ void PrestamoController::filtrarPrestamos(const QString& busqueda, int filtroEst
     QVector<std::shared_ptr<Prestamo>> filtrados;
     // Limpiamos lista filtrada
 
-    prestamosFiltrados.setItems(filtrados);
     // Usamos la función genérica filtrar()
     filtrados = repositorio.filtrar([&](const std::shared_ptr<Prestamo>& p) {
         // -------------------------------
@@ -147,8 +146,9 @@ void PrestamoController::filtrarPrestamos(const QString& busqueda, int filtroEst
         default: return true;
         }
     });
+    prestamosFiltrados.setItems(filtrados);
 }
-const QList<std::shared_ptr<Prestamo>>& PrestamoController::getPrestamosFiltrados() const {
+const QList<std::shared_ptr<Prestamo>> PrestamoController::getPrestamosFiltrados() const {
     // Devuelve la lista que ha sido llenada por PrestamoController::filtrarPrestamos()
     return prestamosFiltrados.obtenerTodos();
 }

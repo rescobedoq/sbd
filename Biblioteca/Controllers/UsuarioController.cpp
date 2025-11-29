@@ -2,9 +2,11 @@
 
 UsuarioController::UsuarioController() {}
 
-// Carga de usuarios implementada
+// Carga de usuarios en memoria
 bool UsuarioController::cargarUsuarios() {
-    usuarios = dao.obtenerUsuarios();
+    if (cacheInicializada) return true;
+    repositorio.limpiar();
+    repositorio.setItems( dao.obtenerUsuarios() );
     return true;
 }
 
@@ -12,35 +14,23 @@ bool UsuarioController::cargarUsuarios() {
 bool UsuarioController::agregarUsuario(const int& id,const QString& nombre) {
     std::shared_ptr<Usuario> usuario;
     usuario = std::make_shared<Usuario>(id, nombre);
-    for (const auto& u : usuarios) {
-        if (u->getId() == id) {
-            qDebug() << "Validación Controller: Usuario duplicado";
-            return false;
-        }
+    if(repositorio.existe(id)){
+        qDebug() << "Validación UsuarioController.agregarUsuario(): Usuario duplicado";
+        return false;
     }
     if(dao.insertarUsuario(usuario)){
-        usuarios.append(usuario);
+        repositorio.agregar(usuario);
         return true;
     }
     return false;
-}
-
-//
-std::shared_ptr<Usuario> UsuarioController::obtenerUsuario(const int& pos) {
-    return usuarios[pos];
 }
 
 bool UsuarioController::actualizarUsuario(const int& id,const QString& nombre) {
     std::shared_ptr<Usuario> usuario;
     usuario = std::make_shared<Usuario>(id, nombre);
     if(dao.actualizarUsuario(usuario)){
-        int pos = obtenerIndicePorID(id);
-        if (pos != -1) {
-            usuarios[pos] = usuario;
-            return true;
-        }
-        qWarning() << "Error de Controller en actualizarUsuario()" << Qt::endl;
-        return false;
+        repositorio.actualizar(usuario);
+        return true;
     }
     return false;
 }
@@ -48,39 +38,30 @@ bool UsuarioController::actualizarUsuario(const int& id,const QString& nombre) {
 bool UsuarioController::eliminarUsuario(int id) {
     if (id >= 0) {
         if(dao.eliminarUsuario(id)){
-            int pos = obtenerIndicePorID(id);
-            if (pos != -1) {
-                usuarios.remove(pos);
-                return true;
-            }
-            qWarning() << "Error de Controller en eliminarUsuario(): Usuario no encontrado en memoria" << Qt::endl;
-            return false;
+            repositorio.remover(id);
+            return true;
         }
     } else {
         qWarning() << "Error de Controller en eliminarUsuario(): ID invalido" << Qt::endl;
+        return false;
     }
     return false;
 }
 
-int UsuarioController::obtenerIndicePorID(int id){
-    int pos = -1;
-    for (int i = 0; i < usuarios.size(); ++i) {
-        if (usuarios[i]->getId() == id) {
-            pos = i;
-        }
-    }
-    return pos;
+QVector<std::shared_ptr<Usuario>> UsuarioController::obtenerUsuarios() {
+    return repositorio.obtenerTodos();
+}
+
+QVector<std::shared_ptr<Usuario>> UsuarioController::buscarUsuario(const QString& nombre) {
+    return repositorio.filtrar([nombre](const std::shared_ptr<Usuario>& u){
+        return u->getNombre().contains(nombre);
+    });
 }
 
 std::shared_ptr<Usuario> UsuarioController::obtenerUsuarioPorID(int id) {
-    for (auto &u : usuarios) {
-        if (u->getId() == id) {
-            return u;
-        }
-    }
-    return nullptr;
+    return repositorio.buscarPorId(id);
 }
 
-QVector<std::shared_ptr<Usuario>>& UsuarioController::obtenerUsuarios() {
-    return usuarios;
+std::shared_ptr<Usuario> UsuarioController::obtenerUsuarioPorIndice(const int& indice) {
+    return repositorio.at(indice);
 }
