@@ -13,8 +13,11 @@ class Prestamos : public QWidget
     Q_OBJECT
 
 public:
-    explicit Prestamos(QWidget *parent = nullptr);
-    void cargarTabla(const QVector<std::shared_ptr<Prestamo>>& usuarios);
+    explicit Prestamos( QWidget *parent = nullptr);
+
+    // 💡 CAMBIO: Cambiamos la función de carga de tabla
+    void cargarTablaFiltrada();
+
     ~Prestamos();
 
 private:
@@ -23,6 +26,10 @@ private:
 private slots:
     void on_btnNuevoPrestamo_clicked();
     void on_btnRegistrarDevolucion_clicked();
+
+    // 💡 NUEVO SLOT: Conexión automática al ComboBox llamado "comboBox"
+    void on_comboBox_currentIndexChanged(int index);
+    void buscarPrestamos();
 };
 
 #endif // PRESTAMOS_H

@@ -3,15 +3,15 @@
 BibliotecaFacade* BibliotecaFacade::instancia = nullptr;
 
 BibliotecaFacade::BibliotecaFacade(std::shared_ptr<UsuarioController> usuarioCtrl,
-                 std::shared_ptr<MaterialController> materialCtrl,
-                 std::shared_ptr<PrestamoController> prestamoCtrl)
+                                   std::shared_ptr<MaterialController> materialCtrl,
+                                   std::shared_ptr<PrestamoController> prestamoCtrl)
     : controllerUsuario(usuarioCtrl),
     controllerMaterial(materialCtrl),
     controllerPrestamo(prestamoCtrl) {}
 
 void BibliotecaFacade::inicializar(std::shared_ptr<UsuarioController> usuarioCtrl,
-                        std::shared_ptr<MaterialController> materialCtrl,
-                        std::shared_ptr<PrestamoController> prestamoCtrl) {
+                                   std::shared_ptr<MaterialController> materialCtrl,
+                                   std::shared_ptr<PrestamoController> prestamoCtrl) {
     if (!instancia) {
         instancia = new BibliotecaFacade(usuarioCtrl, materialCtrl, prestamoCtrl);
     }
@@ -22,7 +22,7 @@ BibliotecaFacade* BibliotecaFacade::obtenerInstancia() {
 }
 
 BibliotecaFacade::ResultadoPrestamo BibliotecaFacade::realizarPrestamo(int usuarioId, int materialId, const QString& nomUsuario, const QString& nomMaterial,
-                                   const QDate& fechaPrestamo, const QDate& fechaLimite) {
+                                                                       const QDate& fechaPrestamo, const QDate& fechaLimite) {
     // Verificar límite de préstamos activos del usuario (ejemplo: máximo 3)
     auto prestamosActivos = controllerPrestamo->obtenerPrestamosActivosPorUsuario(usuarioId);
     if (prestamosActivos.size() >= 3) {

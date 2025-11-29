@@ -37,7 +37,6 @@ public:
         const QString& extra,
         bool disponible = true  // Por defecto disponible
     );
-
     bool actualizarMaterial(
         int id,
         const QString& titulo,

@@ -27,6 +27,7 @@ public:
     bool actualizarUsuario(const int& id,const QString& nombre);
     bool agregarUsuario(const int& id,const QString& nombre);
     bool eliminarUsuario(int id);
+    QVector<std::shared_ptr<Usuario>> buscarUsuario(const QString& nombre);
 
     // Metodos utilitarios
     bool cargarUsuarios();
