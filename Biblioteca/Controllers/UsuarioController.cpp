@@ -52,6 +52,12 @@ QVector<std::shared_ptr<Usuario>> UsuarioController::obtenerUsuarios() {
     return repositorio.obtenerTodos();
 }
 
+QVector<std::shared_ptr<Usuario>> UsuarioController::buscarUsuario(const QString& nombre) {
+    return repositorio.filtrar([nombre](const std::shared_ptr<Usuario>& u){
+        return u->getNombre().contains(nombre);
+    });
+}
+
 std::shared_ptr<Usuario> UsuarioController::obtenerUsuarioPorID(int id) {
     return repositorio.buscarPorId(id);
 }
